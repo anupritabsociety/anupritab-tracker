@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>अनुप्रिता बी सोसायटी — सूचना नोंदणी</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8F9FB;
+      --bg-tertiary: #F0F1F5;
+      --text-primary: #1A1A2E;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --border: #E5E7EB;
+      --border-light: #F3F4F6;
+      --accent: #6366F1;
+      --accent-hover: #4F46E5;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --critical: #EF4444;
+      --info: #3B82F6;
+      --builder: #8B5CF6;
+      --society: #0EA5E9;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 100px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ============ Animations ============ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes progressBar {
+      0% { width: 5%; }
+      30% { width: 40%; }
+      60% { width: 65%; }
+      90% { width: 85%; }
+      100% { width: 95%; }
+    }
+    @keyframes scalePop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .fade-in-up { animation: fadeInUp 0.4s ease-out both; }
+
+    /* ============ Header ============ */
+    .header {
+      background: var(--bg-primary);
+      padding: 20px 20px 18px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+    .header p {
+      font-size: 0.82rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    /* ============ Container ============ */
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 12px 14px 100px;
+    }
+
+    /* ============ Stats Bar ============ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+      animation: fadeInUp 0.4s ease-out 0.05s both;
+    }
+    .stat-card {
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
+      padding: 12px 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+      transition: transform 0.15s ease;
+    }
+    .stat-card:active { transform: scale(0.97); }
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .stat-total .stat-number { color: var(--text-primary); }
+    .stat-builder .stat-number { color: var(--builder); }
+    .stat-society .stat-number { color: var(--society); }
+    .stat-resolved .stat-number { color: var(--success); }
+
+    @media (max-width: 380px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ============ Section Cards ============ */
+    .section-card {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      padding: 18px 16px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-icon {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .icon-issues { background: var(--accent); }
+    .icon-form { background: var(--warning); }
+
+    /* ============ Filter Pills ============ */
+    .filters {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .filters::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .filter-pill:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-pill:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .filter-pill.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .filter-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px; height: 18px;
+      border-radius: 9px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      padding: 0 5px;
+    }
+    .filter-pill.active .filter-count {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    /* ============ Skeleton Loading ============ */
+    .skeleton-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+    }
+    .skeleton-line {
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-light) 50%, var(--bg-tertiary) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    .skeleton-line-short { width: 40%; }
+    .skeleton-line-medium { width: 70%; margin-top: 8px; }
+    .skeleton-line-long { width: 90%; margin-top: 8px; }
+    .skeleton-badges {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .skeleton-badge {
+      width: 60px; height: 22px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-light) 50%, var(--bg-tertiary) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    /* ============ Issue Cards ============ */
+    .issues-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .issue-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      padding-left: 20px;
+      position: relative;
+      transition: border-color 0.15s ease;
+      animation: fadeInUp 0.3s ease-out both;
+      cursor: default;
+    }
+    .issue-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 12px; bottom: 12px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+    }
+    .issue-card.priority-high::before { background: var(--critical); }
+    .issue-card.priority-medium::before { background: var(--warning); }
+    .issue-card.priority-low::before { background: var(--success); }
+    .issue-card:hover { border-color: #D1D5DB; }
+
+    .issue-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .issue-number {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .issue-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+      line-height: 1.4;
+    }
+    .issue-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.68rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .priority-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .badge-high { background: #FEF2F2; color: #B91C1C; }
+    .badge-high .priority-dot { background: var(--critical); }
+    .badge-medium { background: #FFFBEB; color: #B45309; }
+    .badge-medium .priority-dot { background: var(--warning); }
+    .badge-low { background: #F0FDF4; color: #15803D; }
+    .badge-low .priority-dot { background: var(--success); }
+    .badge-builder { background: #F5F3FF; color: #6D28D9; }
+    .badge-society { background: #F0F9FF; color: #0369A1; }
+    .badge-new { background: #EFF6FF; color: #1D4ED8; }
+    .badge-progress { background: #FFFBEB; color: #B45309; }
+    .badge-resolved { background: #F0FDF4; color: #15803D; }
+
+    .issue-flats {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-light);
+    }
+    .flats-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .flat-chip {
+      display: inline-block;
+      padding: 1px 7px;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .complaint-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px; height: 22px;
+      border-radius: 11px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-left: auto;
+      padding: 0 6px;
+    }
+
+    /* Empty / Error state */
+    .empty-state {
+      text-align: center;
+      padding: 36px 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .empty-icon-svg {
+      width: 40px; height: 40px;
+      margin: 0 auto 12px;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+    .empty-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .empty-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .retry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 8px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .retry-btn:hover { background: var(--accent-hover); }
+    .retry-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ============ Form ============ */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    .form-label .required { color: var(--critical); font-weight: 600; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      -webkit-appearance: none;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .form-input:focus-visible {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .form-input::placeholder { color: var(--text-muted); }
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .form-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    /* Photo upload */
+    .photo-upload-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .photo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+    .photo-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .photo-btn-icon {
+      width: 16px; height: 16px;
+    }
+    .photo-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .photo-thumb-wrap {
+      position: relative;
+      width: 52px; height: 52px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      animation: scalePop 0.25s ease-out;
+    }
+    .photo-thumb-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .photo-remove-btn {
+      position: absolute;
+      top: -1px; right: -1px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--critical);
+      color: white;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 2px solid white;
+      line-height: 1;
+    }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .submit-btn:hover { background: var(--accent-hover); }
+    .submit-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled {
+      background: #D1D5DB;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ============ Processing Overlay ============ */
+    .ai-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .ai-overlay.show { display: flex; }
+
+    .ai-box {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+      border: 1px solid var(--border);
+      animation: scalePop 0.3s ease-out;
+    }
+    .ai-spinner {
+      width: 40px; height: 40px;
+      margin: 0 auto 16px;
+      border: 3px solid var(--bg-tertiary);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .ai-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .ai-status {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      min-height: 1.5em;
+    }
+    .ai-progress {
+      width: 100%;
+      height: 3px;
+      background: var(--bg-tertiary);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .ai-progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: progressBar 12s ease-out forwards;
+    }
+
+    /* ============ Success Confirmation ============ */
+    .success-card {
+      display: none;
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      overflow: hidden;
+      animation: fadeInUp 0.4s ease-out;
+    }
+    .success-card.show { display: block; }
+    .success-header {
+      background: var(--success);
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .success-check {
+      width: 28px; height: 28px;
+      flex-shrink: 0;
+    }
+    .success-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .success-body { padding: 14px 16px; }
+    .success-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    .result-item {
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      animation: fadeInUp 0.3s ease-out both;
+    }
+    .result-item:nth-child(2) { animation-delay: 0.08s; }
+    .result-item:nth-child(3) { animation-delay: 0.16s; }
+    .result-merged { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .result-created { background: #EFF6FF; border: 1px solid #BFDBFE; }
+    .result-icon {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .result-merged .result-icon { background: #FDE68A; color: #92400E; }
+    .result-created .result-icon { background: #BFDBFE; color: #1E40AF; }
+    .result-text {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--text-primary);
+    }
+    .result-tag {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .success-close-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      border-top: 1px solid var(--border-light);
+      transition: color 0.15s ease;
+    }
+    .success-close-btn:hover { color: var(--text-secondary); }
+
+    /* ============ Sticky Mobile Submit ============ */
+    .sticky-submit {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 10px 16px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+    }
+    .sticky-submit .submit-btn { margin: 0; }
+    @media (max-width: 640px) {
+      .sticky-submit { display: block; }
+      .form-submit-desktop { display: none; }
+    }
+
+    /* ============ Footer ============ */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    /* ============ Scrollbar ============ */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>अनुप्रिता बी को. हौ. सो. लि.</h1>
+    <p>सोसायटी सूचना / तक्रार नोंदणी</p>
+  </div>
+
+  <div class="container">
+
+    <!-- Success Confirmation -->
+    <div id="successCard" class="success-card">
+      <div class="success-header">
+        <svg class="success-check" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="14" fill="rgba(255,255,255,0.2)"/>
+          <path d="M9 14.5L12.5 18L19 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="success-title">तुमची सूचना यशस्वीरित्या नोंदवली</div>
+      </div>
+      <div class="success-body">
+        <div class="success-subtitle">खालील तक्रारी ओळखल्या:</div>
+        <div id="successDetails"></div>
+      </div>
+      <button class="success-close-btn" onclick="closeSuccess()">बंद करा</button>
+    </div>
+
+    <!-- Stats Grid -->
+    <div id="statsGrid" class="stats-grid"></div>
+
+    <!-- Issues Section -->
+    <div class="section-card fade-in-up" style="animation-delay: 0.1s">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon icon-issues"></div>
+          सद्यस्थिती
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters" id="filterBar"></div>
+
+      <!-- Issues List -->
+      <div class="issues-list" id="issuesList">
+        <div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-medium"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="section-card fade-in-up" style="animation-delay: 0.2s">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon icon-form"></div>
+          नवीन सूचना / तक्रार
+        </div>
+      </div>
+
+      <form id="complaintForm" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">सदनिका क्रमांक <span class="required">*</span></label>
+            <select id="flat" class="form-input" required>
+              <option value="">-- निवडा --</option>
+              <option value="101">101</option><option value="102">102</option>
+              <option value="201">201</option><option value="202">202</option>
+              <option value="301">301</option><option value="302">302</option>
+              <option value="401">401</option><option value="402">402</option>
+              <option value="501">501</option><option value="502">502</option>
+              <option value="601">601</option><option value="602">602</option>
+              <option value="701">701</option><option value="702">702</option>
+              <option value="801">801</option><option value="802">802</option>
+              <option value="901">901</option><option value="902">902</option>
+              <option value="1001">1001</option><option value="1002">1002</option>
+              <option value="1101">1101</option><option value="1102">1102</option>
+              <option value="1201">1201</option><option value="1202">1202</option>
+              <option value="Shop 1">Shop 1</option><option value="Shop 2">Shop 2</option>
+              <option value="Office">Office</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">नाव <span class="required">*</span></label>
+            <input type="text" id="name" class="form-input" required placeholder="तुमचे नाव">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">फोन नंबर <span class="required">*</span></label>
+          <input type="tel" id="phone" class="form-input" required placeholder="98XXXXXXXX" pattern="[0-9]{10}" maxlength="10">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">तुमची सूचना / तक्रार <span class="required">*</span></label>
+          <textarea id="description" class="form-input" required
+            placeholder="तुमची तक्रार किंवा सूचना इथे लिहा. English किंवा मराठी — दोन्ही चालेल. एका वेळी अनेक तक्रारी लिहू शकता."></textarea>
+          <div class="form-hint">अनेक तक्रारी स्वयंचलितपणे वेगळ्या केल्या जातील, प्राधान्य ठरवले जाईल, आणि मागील तक्रारींशी जोडल्या जातील</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">फोटो (ऐच्छिक — जास्तीत जास्त 5)</label>
+          <div class="photo-upload-area">
+            <label class="photo-btn" for="photoInput">
+              <svg class="photo-btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="14" height="10" rx="2"/>
+                <circle cx="5.5" cy="7" r="1.5"/>
+                <path d="M15 11l-3.5-3.5L6 13"/>
+              </svg>
+              फोटो निवडा
+            </label>
+            <input type="file" id="photoInput" accept="image/*" multiple
+              style="display:none" onchange="handlePhotos(this)">
+          </div>
+          <div class="photo-preview" id="photoPreview"></div>
+        </div>
+
+        <div class="form-submit-desktop">
+          <button type="submit" class="submit-btn" id="submitBtn">सबमिट करा</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="footer">
+      अनुप्रिता बी को. हौ. सो. लि.
+    </div>
+  </div>
+
+  <!-- Sticky mobile submit -->
+  <div class="sticky-submit">
+    <button type="button" class="submit-btn" id="submitBtnMobile" onclick="triggerSubmit()">सबमिट करा</button>
+  </div>
+
+  <!-- Processing Overlay -->
+  <div class="ai-overlay" id="aiOverlay">
+    <div class="ai-box">
+      <div class="ai-spinner"></div>
+      <div class="ai-title">तक्रार प्रक्रिया सुरू आहे</div>
+      <div class="ai-status" id="aiStatus">तक्रार विश्लेषण सुरू...</div>
+      <div class="ai-progress">
+        <div class="ai-progress-bar" id="aiProgressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // State
+    // ============================================================
+    var allIssues = [];
+    var currentFilter = 'all';
+    var selectedPhotos = [];
+    var loadTimeout = null;
+
+    var statusMessages = [
+      'तक्रार विश्लेषण सुरू...',
+      'मराठी मजकूर वाचत आहे...',
+      'वेगवेगळ्या तक्रारी ओळखत आहे...',
+      'प्राधान्यक्रम ठरवत आहे...',
+      'मागील तक्रारींशी जुळवत आहे...',
+      'नोंदणी अद्ययावत करत आहे...'
+    ];
+
+    // ============================================================
+    // Load on DOMContentLoaded
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      loadIssues();
+    });
+
+    function loadIssues() {
+      console.log('[Tracker] Loading issues...');
+
+      // Show skeleton loading
+      document.getElementById('issuesList').innerHTML =
+        '<div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>' +
+        '<div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-medium"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>' +
+        '<div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>';
+
+      // 15-second timeout
+      loadTimeout = setTimeout(function() {
+        console.log('[Tracker] Load timeout after 15 seconds');
+        showLoadError('तक्रारी लोड होण्यास वेळ लागत आहे');
+      }, 15000);
+
+      google.script.run
+        .withSuccessHandler(function(issues) {
+          clearTimeout(loadTimeout);
+          console.log('[Tracker] Issues loaded:', issues ? issues.length : 0);
+          allIssues = issues || [];
+          renderStats();
+          renderFilters();
+          renderIssues();
+        })
+        .withFailureHandler(function(err) {
+          clearTimeout(loadTimeout);
+          console.error('[Tracker] Load failed:', err);
+          showLoadError('तक्रारी लोड करता आल्या नाहीत');
+        })
+        .getIssueRegister();
+    }
+
+    function showLoadError(message) {
+      document.getElementById('issuesList').innerHTML =
+        '<div class="empty-state">' +
+          '<svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+            '<circle cx="12" cy="12" r="10"/>' +
+            '<line x1="12" y1="8" x2="12" y2="12"/>' +
+            '<line x1="12" y1="16" x2="12.01" y2="16"/>' +
+          '</svg>' +
+          '<div class="empty-title">' + message + '</div>' +
+          '<div class="empty-sub">कृपया पुन्हा प्रयत्न करा</div>' +
+          '<button class="retry-btn" onclick="loadIssues()">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>' +
+            'पुन्हा प्रयत्न करा' +
+          '</button>' +
+        '</div>';
+    }
+
+    // ============================================================
+    // Render Stats
+    // ============================================================
+    function renderStats() {
+      var total = allIssues.length;
+      var builder = allIssues.filter(function(i) { return i.category === 'बिल्डर'; }).length;
+      var society = allIssues.filter(function(i) { return i.category === 'सोसायटी'; }).length;
+      var resolved = allIssues.filter(function(i) { return i.status === 'निराकरण'; }).length;
+
+      document.getElementById('statsGrid').innerHTML =
+        '<div class="stat-card stat-total">' +
+          '<div class="stat-number">' + total + '</div>' +
+          '<div class="stat-label">एकूण तक्रारी</div>' +
+        '</div>' +
+        '<div class="stat-card stat-builder">' +
+          '<div class="stat-number">' + builder + '</div>' +
+          '<div class="stat-label">बिल्डर</div>' +
+        '</div>' +
+        '<div class="stat-card stat-society">' +
+          '<div class="stat-number">' + society + '</div>' +
+          '<div class="stat-label">सोसायटी</div>' +
+        '</div>' +
+        '<div class="stat-card stat-resolved">' +
+          '<div class="stat-number">' + resolved + '</div>' +
+          '<div class="stat-label">निराकरण</div>' +
+        '</div>';
+    }
+
+    // ============================================================
+    // Render Filters
+    // ============================================================
+    function renderFilters() {
+      var counts = {
+        all: allIssues.length,
+        builder: allIssues.filter(function(i) { return i.category === 'बिल्डर'; }).length,
+        society: allIssues.filter(function(i) { return i.category === 'सोसायटी'; }).length,
+        high: allIssues.filter(function(i) { return i.priority && i.priority.indexOf('High') !== -1; }).length,
+        progress: allIssues.filter(function(i) { return i.status === 'प्रगतीत'; }).length,
+        resolved: allIssues.filter(function(i) { return i.status === 'निराकरण'; }).length
+      };
+
+      var filters = [
+        { key: 'all', label: 'सर्व' },
+        { key: 'builder', label: 'बिल्डर' },
+        { key: 'society', label: 'सोसायटी' },
+        { key: 'high', label: 'तातडी' },
+        { key: 'progress', label: 'प्रगतीत' },
+        { key: 'resolved', label: 'निराकरण' }
+      ];
+
+      document.getElementById('filterBar').innerHTML = filters.map(function(f) {
+        var active = currentFilter === f.key ? ' active' : '';
+        var countHtml = counts[f.key] > 0
+          ? ' <span class="filter-count">' + counts[f.key] + '</span>'
+          : '';
+        return '<button class="filter-pill' + active + '" onclick="applyFilter(\'' + f.key + '\', this)">' +
+          f.label + countHtml + '</button>';
+      }).join('');
+    }
+
+    // ============================================================
+    // Render Issues
+    // ============================================================
+    function renderIssues() {
+      try {
+      var filtered = filterIssues(allIssues, currentFilter);
+      var list = document.getElementById('issuesList');
+      console.log('[Tracker] Rendering', filtered.length, 'issues');
+
+      if (filtered.length === 0) {
+        list.innerHTML =
+          '<div class="empty-state">' +
+            '<svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+              '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>' +
+              '<polyline points="14 2 14 8 20 8"/>' +
+              '<line x1="16" y1="13" x2="8" y2="13"/>' +
+              '<line x1="16" y1="17" x2="8" y2="17"/>' +
+            '</svg>' +
+            '<div class="empty-title">या प्रकारच्या तक्रारी सापडल्या नाहीत</div>' +
+            '<div class="empty-sub">नवीन तक्रार नोंदवण्यासाठी खालील फॉर्म वापरा</div>' +
+          '</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(function(issue, idx) {
+        var rb = issue.reportedBy ? String(issue.reportedBy) : '';
+        var flats = rb ? rb.split(',').map(function(f) { return f.trim(); }) : [];
+        var flatChips = flats.slice(0, 5).map(function(f) {
+          return '<span class="flat-chip">' + escapeHtml(f) + '</span>';
+        }).join('');
+        if (flats.length > 5) flatChips += '<span class="flat-chip">+' + (flats.length - 5) + '</span>';
+
+        var priorityClass = '';
+        if (issue.priority && issue.priority.indexOf('High') !== -1) priorityClass = ' priority-high';
+        else if (issue.priority && issue.priority.indexOf('Medium') !== -1) priorityClass = ' priority-medium';
+        else if (issue.priority && issue.priority.indexOf('Low') !== -1) priorityClass = ' priority-low';
+
+        return '<div class="issue-card' + priorityClass + '" style="animation-delay: ' + (idx * 0.04) + 's">' +
+          '<div class="issue-card-header">' +
+            '<span class="issue-number">#' + issue.issueNo + '</span>' +
+            '<div class="issue-title">' + escapeHtml(issue.issue) + '</div>' +
+          '</div>' +
+          '<div class="issue-meta">' +
+            getCategoryBadge(issue.category) +
+            getPriorityBadge(issue.priority) +
+            getStatusBadge(issue.status) +
+          '</div>' +
+          '<div class="issue-flats">' +
+            '<span class="flats-label">सदनिका:</span>' +
+            flatChips +
+            '<span class="complaint-count">' + (issue.count || 0) + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      console.log('[Tracker] Render complete');
+      } catch(e) {
+        console.error('[Tracker] Render error:', e.message, e.stack);
+        showLoadError('तक्रारी दाखवता आल्या नाहीत: ' + e.message);
+      }
+    }
+
+    function filterIssues(issues, filter) {
+      switch(filter) {
+        case 'builder': return issues.filter(function(i) { return i.category === 'बिल्डर'; });
+        case 'society': return issues.filter(function(i) { return i.category === 'सोसायटी'; });
+        case 'high': return issues.filter(function(i) { return i.priority && i.priority.indexOf('High') !== -1; });
+        case 'progress': return issues.filter(function(i) { return i.status === 'प्रगतीत'; });
+        case 'resolved': return issues.filter(function(i) { return i.status === 'निराकरण'; });
+        default: return issues;
+      }
+    }
+
+    function applyFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      renderIssues();
+    }
+
+    // ============================================================
+    // Badge Helpers
+    // ============================================================
+    function getPriorityBadge(p) {
+      if (!p) return '';
+      if (p.indexOf('High') !== -1) return '<span class="badge badge-high"><span class="priority-dot"></span>तातडी</span>';
+      if (p.indexOf('Medium') !== -1) return '<span class="badge badge-medium"><span class="priority-dot"></span>मध्यम</span>';
+      if (p.indexOf('Low') !== -1) return '<span class="badge badge-low"><span class="priority-dot"></span>कमी</span>';
+      return '<span class="badge">' + escapeHtml(p) + '</span>';
+    }
+
+    function getStatusBadge(s) {
+      if (!s) return '';
+      if (s === 'नवीन') return '<span class="badge badge-new">' + s + '</span>';
+      if (s === 'प्रगतीत') return '<span class="badge badge-progress">' + s + '</span>';
+      if (s === 'निराकरण') return '<span class="badge badge-resolved">' + s + '</span>';
+      return '<span class="badge">' + escapeHtml(s) + '</span>';
+    }
+
+    function getCategoryBadge(c) {
+      if (!c) return '';
+      if (c === 'बिल्डर') return '<span class="badge badge-builder">' + c + '</span>';
+      if (c === 'सोसायटी') return '<span class="badge badge-society">' + c + '</span>';
+      return '<span class="badge">' + escapeHtml(c) + '</span>';
+    }
+
+    function escapeHtml(text) {
+      if (text === null || text === undefined) return '';
+      var div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
+    }
+
+    // ============================================================
+    // Photo Handling
+    // ============================================================
+    function handlePhotos(input) {
+      var files = Array.from(input.files);
+      if (selectedPhotos.length + files.length > 5) {
+        alert('जास्तीत जास्त 5 फोटो निवडता येतात.');
+        return;
+      }
+
+      files.forEach(function(file) {
+        if (selectedPhotos.length >= 5) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var base64 = e.target.result.split(',')[1];
+          var ext = file.name.split('.').pop();
+          selectedPhotos.push({
+            data: base64,
+            mimeType: file.type,
+            extension: ext,
+            preview: e.target.result
+          });
+          renderPhotoPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+      input.value = '';
+    }
+
+    function renderPhotoPreview() {
+      var container = document.getElementById('photoPreview');
+      container.innerHTML = selectedPhotos.map(function(photo, idx) {
+        return '<div class="photo-thumb-wrap">' +
+          '<img src="' + photo.preview + '">' +
+          '<div class="photo-remove-btn" onclick="removePhoto(' + idx + ')">&#215;</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function removePhoto(idx) {
+      selectedPhotos.splice(idx, 1);
+      renderPhotoPreview();
+    }
+
+    // ============================================================
+    // Form Submit
+    // ============================================================
+    function triggerSubmit() {
+      document.getElementById('complaintForm').requestSubmit();
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      var flat = document.getElementById('flat').value;
+      var name = document.getElementById('name').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var description = document.getElementById('description').value.trim();
+
+      if (!flat || !name || !phone || !description) {
+        alert('कृपया सर्व आवश्यक माहिती भरा.');
+        return;
+      }
+
+      showProcessingOverlay();
+
+      var formData = {
+        flat: flat,
+        name: name,
+        phone: phone,
+        description: description,
+        photos: selectedPhotos.map(function(p) {
+          return { data: p.data, mimeType: p.mimeType, extension: p.extension };
+        })
+      };
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideProcessingOverlay();
+
+          if (result.success) {
+            showSuccess(result.results);
+            resetForm();
+            loadIssues();
+          } else {
+            alert('तक्रार नोंदवता आली नाही: ' + (result.error || 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function(err) {
+          hideProcessingOverlay();
+          console.error('[Tracker] Submit failed:', err);
+          alert('तक्रार नोंदवता आली नाही. कृपया पुन्हा प्रयत्न करा.');
+        })
+        .submitComplaint(formData);
+    }
+
+    // ============================================================
+    // Processing Overlay
+    // ============================================================
+    var statusInterval = null;
+
+    function showProcessingOverlay() {
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('submitBtnMobile').disabled = true;
+      document.getElementById('aiProgressBar').style.animation = 'none';
+      void document.getElementById('aiProgressBar').offsetWidth;
+      document.getElementById('aiProgressBar').style.animation = 'progressBar 12s ease-out forwards';
+
+      var overlay = document.getElementById('aiOverlay');
+      overlay.classList.add('show');
+
+      var idx = 0;
+      document.getElementById('aiStatus').textContent = statusMessages[0];
+      statusInterval = setInterval(function() {
+        idx++;
+        if (idx < statusMessages.length) {
+          document.getElementById('aiStatus').textContent = statusMessages[idx];
+        }
+      }, 2200);
+    }
+
+    function hideProcessingOverlay() {
+      document.getElementById('aiOverlay').classList.remove('show');
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('submitBtnMobile').disabled = false;
+      if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
+      }
+    }
+
+    // ============================================================
+    // Success Confirmation
+    // ============================================================
+    function showSuccess(results) {
+      var details = document.getElementById('successDetails');
+      details.innerHTML = results.map(function(r) {
+        if (r.action === 'merged') {
+          return '<div class="result-item result-merged">' +
+            '<div class="result-icon">' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>' +
+            '</div>' +
+            '<div>' +
+              '<div class="result-text">' + escapeHtml(r.issue) + '</div>' +
+              '<div class="result-tag">Issue #' + r.issueNo + ' मध्ये जोडले (' + r.previousCount + ' → ' + r.newCount + ' तक्रारी)</div>' +
+            '</div>' +
+          '</div>';
+        } else {
+          return '<div class="result-item result-created">' +
+            '<div class="result-icon">' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+            '</div>' +
+            '<div>' +
+              '<div class="result-text">' + escapeHtml(r.issue) + '</div>' +
+              '<div class="result-tag">नवीन Issue #' + r.issueNo + ' तयार केले</div>' +
+            '</div>' +
+          '</div>';
+        }
+      }).join('');
+
+      var card = document.getElementById('successCard');
+      card.classList.add('show');
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      setTimeout(function() { card.classList.remove('show'); }, 20000);
+    }
+
+    function closeSuccess() {
+      document.getElementById('successCard').classList.remove('show');
+    }
+
+    // ============================================================
+    // Reset Form
+    // ============================================================
+    function resetForm() {
+      document.getElementById('complaintForm').reset();
+      selectedPhotos = [];
+      renderPhotoPreview();
+    }
+  </script>
+
+</body>
+</html>
