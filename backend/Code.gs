@@ -113,10 +113,14 @@ function getIssueRegister() {
 
   if (data.length <= 1) return []; // Only headers
 
+  // Reverse mapping: Marathi status → English key for safe HTTP transport
+  var statusToKey = { 'नवीन': 'new', 'प्रगतीत': 'progress', 'निराकरण': 'resolved' };
+
   const issues = [];
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     if (!row[0] && !row[1]) continue; // Skip empty rows
+    var rawStatus = row[6] ? row[6].toString().trim() : '';
     issues.push({
       issueNo: row[0],
       issue: row[1],
@@ -124,7 +128,8 @@ function getIssueRegister() {
       priority: row[3],
       reportedBy: row[4],
       count: row[5],
-      status: row[6],
+      status: rawStatus,
+      statusKey: statusToKey[rawStatus] || '',
       lastUpdated: row[7] ? Utilities.formatDate(new Date(row[7]), 'Asia/Kolkata', 'dd-MM-yyyy') : '',
       aiNotes: row[8]
     });

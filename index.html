@@ -1355,6 +1355,14 @@
       document.querySelectorAll('.footer-year').forEach(function(el) {
         el.textContent = new Date().getFullYear();
       });
+
+      // Restore MC auth from sessionStorage (Bug 1 fix)
+      if (sessionStorage.getItem('mcAuth') === 'true') {
+        isMcAuthenticated = true;
+        document.getElementById('mcLoginBtn').classList.add('active');
+        document.getElementById('mcLoginBtn').textContent = 'MC मोड';
+      }
+
       initRouter();
     });
 
@@ -1379,7 +1387,13 @@
             var data = JSON.parse(text);
             if (data.success) {
               console.log('[Tracker] Issues loaded:', data.issues ? data.issues.length : 0);
-              allIssues = data.issues || [];
+              allIssues = (data.issues || []).map(function(issue) {
+                // Normalize status using statusKey to avoid Marathi encoding issues (Bug 3 & 4 fix)
+                if (issue.statusKey && KEY_TO_STATUS[issue.statusKey]) {
+                  issue.status = KEY_TO_STATUS[issue.statusKey];
+                }
+                return issue;
+              });
               renderStats();
               renderFilters();
               renderIssues();
@@ -1428,6 +1442,7 @@
       if (tab === 'table') {
         document.getElementById('tableView').style.display = 'block';
         document.getElementById('kanbanView').classList.remove('active');
+        renderIssues();
       } else {
         document.getElementById('tableView').style.display = 'none';
         document.getElementById('kanbanView').classList.add('active');
@@ -1800,9 +1815,17 @@
     // ============================================================
     function getStatusBadge(s) {
       if (!s) return '';
+      // Try direct match first
       if (s === 'नवीन') return '<span class="badge badge-new">' + s + '</span>';
       if (s === 'प्रगतीत') return '<span class="badge badge-progress">' + s + '</span>';
       if (s === 'निराकरण') return '<span class="badge badge-resolved">' + s + '</span>';
+      // Fallback: try English key lookup (handles encoding-corrupted Marathi)
+      if (KEY_TO_STATUS[s]) {
+        var normalized = KEY_TO_STATUS[s];
+        if (normalized === 'नवीन') return '<span class="badge badge-new">' + normalized + '</span>';
+        if (normalized === 'प्रगतीत') return '<span class="badge badge-progress">' + normalized + '</span>';
+        if (normalized === 'निराकरण') return '<span class="badge badge-resolved">' + normalized + '</span>';
+      }
       return '<span class="badge">' + escapeHtml(s) + '</span>';
     }
 
@@ -1826,6 +1849,7 @@
     function handleMcLogin() {
       if (isMcAuthenticated) {
         isMcAuthenticated = false;
+        sessionStorage.removeItem('mcAuth');
         document.getElementById('mcLoginBtn').classList.remove('active');
         document.getElementById('mcLoginBtn').textContent = 'MC लॉगिन';
         if (currentTab === 'kanban') renderKanban();
@@ -1853,6 +1877,7 @@
         .then(function(data) {
           if (data.valid) {
             isMcAuthenticated = true;
+            sessionStorage.setItem('mcAuth', 'true');
             document.getElementById('mcLoginBtn').classList.add('active');
             document.getElementById('mcLoginBtn').textContent = 'MC मोड';
             closePinModal();
