@@ -41,6 +41,19 @@
       overflow-x: hidden;
     }
 
+    /* ============ Top Accent Bar ============ */
+    body::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--builder), var(--society));
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+    }
+
     /* ============ Animations ============ */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(12px); }
@@ -68,6 +81,14 @@
       0% { transform: scale(0.8); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -82,28 +103,121 @@
     /* ============ Header ============ */
     .header {
       background: var(--bg-primary);
-      padding: 20px 20px 18px;
+      padding: 12px 16px;
       text-align: center;
       border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
+    .header-content { flex: 1; }
     .header h1 {
-      font-size: 1.2rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-primary);
       letter-spacing: -0.01em;
-      margin-bottom: 2px;
+      margin-bottom: 0;
     }
     .header p {
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       font-weight: 400;
       color: var(--text-secondary);
     }
+
+    /* ============ Page Containers ============ */
+    .page { display: none; min-height: calc(100vh - 56px); }
+    .page.active { display: block; animation: pageFadeIn 0.25s ease-out; }
+
+    /* ============ Bottom Nav ============ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 1000;
+      box-shadow: 0 -1px 4px rgba(0,0,0,0.04);
+    }
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.15s ease;
+    }
+    .nav-tab.active { color: var(--accent); font-weight: 600; }
+    .nav-tab.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 25%;
+      right: 25%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 0 0 2px 2px;
+    }
+    .nav-tab svg { width: 22px; height: 22px; }
 
     /* ============ Container ============ */
     .container {
       max-width: 640px;
       margin: 0 auto;
-      padding: 12px 14px 100px;
+      padding: 12px 14px calc(56px + 16px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ============ Page Title (Submit page) ============ */
+    .page-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-title-icon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      flex-shrink: 0;
+    }
+
+    /* ============ MC Login Button ============ */
+    .mc-login-btn {
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .mc-login-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .mc-login-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
     }
 
     /* ============ Stats Bar ============ */
@@ -127,6 +241,7 @@
       font-size: 1.5rem;
       font-weight: 700;
       line-height: 1.1;
+      animation: countUp 0.3s ease-out both;
     }
     .stat-label {
       font-size: 0.65rem;
@@ -171,7 +286,38 @@
       flex-shrink: 0;
     }
     .icon-issues { background: var(--accent); }
-    .icon-form { background: var(--warning); }
+
+    /* ============ Tab Switcher ============ */
+    .tab-switcher {
+      display: flex;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 7px 16px;
+      border: none;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      z-index: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab-btn.active {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      font-weight: 600;
+    }
 
     /* ============ Filter Pills ============ */
     .filters {
@@ -229,13 +375,14 @@
       color: white;
     }
 
-    /* ============ Skeleton Loading ============ */
-    .skeleton-card {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      margin-bottom: 8px;
+    /* ============ Skeleton Loading (Table) ============ */
+    .skeleton-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .skeleton-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-light);
     }
     .skeleton-line {
       height: 12px;
@@ -244,76 +391,92 @@
       background-size: 200% 100%;
       animation: shimmer 1.5s ease-in-out infinite;
     }
-    .skeleton-line-short { width: 40%; }
-    .skeleton-line-medium { width: 70%; margin-top: 8px; }
-    .skeleton-line-long { width: 90%; margin-top: 8px; }
-    .skeleton-badges {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-    }
-    .skeleton-badge {
-      width: 60px; height: 22px;
+    .skeleton-line-short { width: 30px; }
+    .skeleton-line-medium { width: 70%; }
+    .skeleton-line-long { width: 90%; }
+    .skeleton-badge-sm {
+      display: inline-block;
+      width: 50px; height: 20px;
       border-radius: var(--radius-full);
       background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-light) 50%, var(--bg-tertiary) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.5s ease-in-out infinite;
     }
 
-    /* ============ Issue Cards ============ */
-    .issues-list { display: flex; flex-direction: column; gap: 8px; }
-
-    .issue-card {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
+    /* ============ Table View ============ */
+    .issues-table-wrap {
       border-radius: var(--radius-md);
-      padding: 14px 16px;
-      padding-left: 20px;
-      position: relative;
-      transition: border-color 0.15s ease;
-      animation: fadeInUp 0.3s ease-out both;
-      cursor: default;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
-    .issue-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 12px; bottom: 12px;
-      width: 3px;
-      border-radius: 0 2px 2px 0;
+    .issues-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
     }
-    .issue-card.priority-high::before { background: var(--critical); }
-    .issue-card.priority-medium::before { background: var(--warning); }
-    .issue-card.priority-low::before { background: var(--success); }
-    .issue-card:hover { border-color: #D1D5DB; }
-
-    .issue-card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
+    .issues-table thead th {
+      background: var(--bg-tertiary);
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      white-space: nowrap;
     }
-    .issue-number {
-      font-size: 0.7rem;
+    .issues-table tbody tr {
+      transition: background 0.12s ease;
+    }
+    .issues-table tbody tr:nth-child(even) {
+      background: var(--bg-secondary);
+    }
+    .issues-table tbody tr:hover {
+      background: #EEF2FF;
+    }
+    .issues-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+    .issues-table .col-num {
+      width: 36px;
       font-weight: 600;
       color: var(--text-muted);
-      flex-shrink: 0;
+      font-size: 0.72rem;
     }
-    .issue-title {
-      font-size: 0.85rem;
+    .issues-table .col-issue {
       font-weight: 500;
       color: var(--text-primary);
-      flex: 1;
-      line-height: 1.4;
+      line-height: 1.35;
     }
-    .issue-meta {
-      display: flex;
+    .issues-table .col-cat { width: 70px; }
+    .issues-table .col-status { width: 72px; }
+    .issues-table .col-count {
+      width: 42px;
+      text-align: center;
+    }
+    .count-circle {
+      display: inline-flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
+      justify-content: center;
+      min-width: 24px; height: 24px;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0 6px;
     }
 
-    /* Badges */
+    @media (max-width: 420px) {
+      .issues-table .col-cat,
+      .issues-table thead th:nth-child(3) { display: none; }
+    }
+
+    /* ============ Badges ============ */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -324,60 +487,161 @@
       font-weight: 500;
       white-space: nowrap;
     }
-    .priority-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .badge-high { background: #FEF2F2; color: #B91C1C; }
-    .badge-high .priority-dot { background: var(--critical); }
-    .badge-medium { background: #FFFBEB; color: #B45309; }
-    .badge-medium .priority-dot { background: var(--warning); }
-    .badge-low { background: #F0FDF4; color: #15803D; }
-    .badge-low .priority-dot { background: var(--success); }
     .badge-builder { background: #F5F3FF; color: #6D28D9; }
     .badge-society { background: #F0F9FF; color: #0369A1; }
     .badge-new { background: #EFF6FF; color: #1D4ED8; }
     .badge-progress { background: #FFFBEB; color: #B45309; }
     .badge-resolved { background: #F0FDF4; color: #15803D; }
 
-    .issue-flats {
+    /* ============ Kanban Board ============ */
+    .kanban-board { display: none; }
+    .kanban-board.active { display: block; }
+
+    .swim-lane {
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .swim-lane-header {
+      background: var(--bg-tertiary);
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .swim-lane-header .lane-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+    .lane-dot-builder { background: var(--builder); }
+    .lane-dot-society { background: var(--society); }
+    .swim-lane-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      min-height: 100px;
+    }
+    .kanban-column {
+      padding: 8px;
+      border-right: 1px solid var(--border-light);
+      min-height: 80px;
+    }
+    .kanban-column:last-child { border-right: none; }
+    .kanban-col-header {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 4px 6px 8px;
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border-light);
     }
-    .flats-label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    .flat-chip {
-      display: inline-block;
-      padding: 1px 7px;
-      background: var(--bg-tertiary);
-      border-radius: 6px;
-      font-size: 0.68rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-    .complaint-count {
+    .kanban-col-count {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 22px; height: 22px;
-      border-radius: 11px;
-      background: var(--accent);
-      color: white;
-      font-size: 0.68rem;
-      font-weight: 600;
-      margin-left: auto;
-      padding: 0 6px;
+      min-width: 16px; height: 16px;
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding: 0 4px;
     }
 
-    /* Empty / Error state */
+    .kanban-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      font-size: 0.72rem;
+      cursor: default;
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .kanban-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .kanban-card.draggable {
+      cursor: grab;
+    }
+    .kanban-card.draggable:active {
+      cursor: grabbing;
+    }
+    .kanban-card.dragging {
+      opacity: 0.5;
+      transform: rotate(2deg);
+    }
+    .kanban-column.drag-over {
+      background: #EEF2FF;
+    }
+    .kanban-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .kanban-card-num {
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .kanban-card-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px; height: 18px;
+      border-radius: 9px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .kanban-card-title {
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .kanban-card-flats {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+    .kanban-flat-chip {
+      display: inline-block;
+      padding: 0px 5px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 640px) {
+      .swim-lane-body {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .swim-lane-body::-webkit-scrollbar { display: none; }
+      .kanban-column {
+        min-width: 160px;
+      }
+    }
+
+    /* ============ Empty / Error state ============ */
     .empty-state {
       text-align: center;
       padding: 36px 20px;
@@ -418,6 +682,23 @@
     .retry-btn:hover { background: var(--accent-hover); }
     .retry-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+    /* Flat chips in table row tooltip */
+    .issue-flats-inline {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .flat-chip {
+      display: inline-block;
+      padding: 1px 7px;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
     /* ============ Form ============ */
     .form-group { margin-bottom: 14px; }
     .form-label {
@@ -428,14 +709,6 @@
       margin-bottom: 5px;
     }
     .form-label .required { color: var(--critical); font-weight: 600; }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 480px) {
-      .form-row { grid-template-columns: 1fr; }
-    }
 
     .form-input {
       width: 100%;
@@ -532,7 +805,7 @@
     .submit-btn {
       width: 100%;
       padding: 12px;
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
       color: white;
       border: none;
       border-radius: var(--radius-sm);
@@ -540,10 +813,10 @@
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
-      transition: background 0.15s ease;
+      transition: opacity 0.15s ease, transform 0.08s ease;
       -webkit-tap-highlight-color: transparent;
     }
-    .submit-btn:hover { background: var(--accent-hover); }
+    .submit-btn:hover { opacity: 0.92; }
     .submit-btn:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
@@ -683,38 +956,115 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
-    .success-close-btn {
-      display: block;
-      width: 100%;
+    .success-footer-actions {
+      display: flex;
+      border-top: 1px solid var(--border-light);
+    }
+    .success-action-btn {
+      flex: 1;
       padding: 10px;
       border: none;
       background: none;
-      color: var(--text-muted);
       font-size: 0.75rem;
       font-family: inherit;
       cursor: pointer;
-      border-top: 1px solid var(--border-light);
-      transition: color 0.15s ease;
+      transition: color 0.15s ease, background 0.15s ease;
     }
-    .success-close-btn:hover { color: var(--text-secondary); }
+    .success-action-btn:first-child {
+      border-right: 1px solid var(--border-light);
+    }
+    .success-view-btn {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .success-view-btn:hover { background: #EEF2FF; }
+    .success-close-btn {
+      color: var(--text-muted);
+    }
+    .success-close-btn:hover { color: var(--text-secondary); background: var(--bg-secondary); }
 
-    /* ============ Sticky Mobile Submit ============ */
-    .sticky-submit {
+    /* ============ MC PIN Modal ============ */
+    .pin-modal {
       display: none;
       position: fixed;
-      bottom: 0; left: 0; right: 0;
-      padding: 10px 16px;
-      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--border);
-      z-index: 100;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(3px);
+      z-index: 3000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
-    .sticky-submit .submit-btn { margin: 0; }
-    @media (max-width: 640px) {
-      .sticky-submit { display: block; }
-      .form-submit-desktop { display: none; }
+    .pin-modal.show { display: flex; }
+    .pin-box {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      text-align: center;
+      max-width: 280px;
+      width: 100%;
+      border: 1px solid var(--border);
+      animation: scalePop 0.25s ease-out;
+    }
+    .pin-box h3 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .pin-box p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .pin-input {
+      width: 140px;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 1.2rem;
+      font-family: inherit;
+      text-align: center;
+      letter-spacing: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      -webkit-appearance: none;
+    }
+    .pin-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .pin-error {
+      color: var(--critical);
+      font-size: 0.72rem;
+      margin-top: 8px;
+      min-height: 1.2em;
+    }
+    .pin-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+    .pin-actions button {
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: all 0.15s ease;
+    }
+    .pin-cancel {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+    }
+    .pin-submit {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent) !important;
     }
 
     /* ============ Footer ============ */
@@ -723,6 +1073,13 @@
       padding: 20px;
       font-size: 0.68rem;
       color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .footer-tagline {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      opacity: 0.6;
+      margin-top: 2px;
     }
 
     /* ============ Scrollbar ============ */
@@ -735,81 +1092,60 @@
 
   <!-- Header -->
   <div class="header">
-    <h1>अनुप्रिता बी को. हौ. सो. लि.</h1>
-    <p>सोसायटी सूचना / तक्रार नोंदणी</p>
+    <div class="header-content">
+      <h1>अनुप्रिता बी को. हौ. सो. लि.</h1>
+      <p>सोसायटी सूचना / तक्रार नोंदणी</p>
+    </div>
   </div>
 
-  <div class="container">
+  <!-- ============ PAGE: Submit ============ -->
+  <div class="page" id="pageSubmit">
+    <div class="container">
 
-    <!-- Success Confirmation -->
-    <div id="successCard" class="success-card">
-      <div class="success-header">
-        <svg class="success-check" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="14" fill="rgba(255,255,255,0.2)"/>
-          <path d="M9 14.5L12.5 18L19 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="success-title">तुमची सूचना यशस्वीरित्या नोंदवली</div>
-      </div>
-      <div class="success-body">
-        <div class="success-subtitle">खालील तक्रारी ओळखल्या:</div>
-        <div id="successDetails"></div>
-      </div>
-      <button class="success-close-btn" onclick="closeSuccess()">बंद करा</button>
-    </div>
-
-    <!-- Stats Grid -->
-    <div id="statsGrid" class="stats-grid"></div>
-
-    <!-- Issues Section -->
-    <div class="section-card fade-in-up" style="animation-delay: 0.1s">
-      <div class="section-header">
-        <div class="section-title">
-          <div class="section-icon icon-issues"></div>
-          सद्यस्थिती
+      <!-- Success Confirmation -->
+      <div id="successCard" class="success-card">
+        <div class="success-header">
+          <svg class="success-check" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="14" fill="rgba(255,255,255,0.2)"/>
+            <path d="M9 14.5L12.5 18L19 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="success-title">तुमची सूचना यशस्वीरित्या नोंदवली</div>
+        </div>
+        <div class="success-body">
+          <div class="success-subtitle">खालील तक्रारी ओळखल्या:</div>
+          <div id="successDetails"></div>
+        </div>
+        <div class="success-footer-actions">
+          <button class="success-action-btn success-view-btn" onclick="navigateTo('tracker')">तक्रार पहा &rarr;</button>
+          <button class="success-action-btn success-close-btn" onclick="closeSuccess()">बंद करा</button>
         </div>
       </div>
 
-      <!-- Filters -->
-      <div class="filters" id="filterBar"></div>
-
-      <!-- Issues List -->
-      <div class="issues-list" id="issuesList">
-        <div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>
-        <div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-medium"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>
-        <div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>
-      </div>
-    </div>
-
-    <!-- Form Section -->
-    <div class="section-card fade-in-up" style="animation-delay: 0.2s">
-      <div class="section-header">
-        <div class="section-title">
-          <div class="section-icon icon-form"></div>
-          नवीन सूचना / तक्रार
-        </div>
+      <div class="page-title">
+        <div class="page-title-icon"></div>
+        तक्रार / सूचना नोंदवा
       </div>
 
       <form id="complaintForm" onsubmit="handleSubmit(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">सदनिका क्रमांक <span class="required">*</span></label>
-            <select id="flat" class="form-input" required>
-              <option value="">-- निवडा --</option>
-              <option value="101">101</option><option value="102">102</option><option value="103">103</option>
-              <option value="201">201</option><option value="202">202</option><option value="203">203</option>
-              <option value="301">301</option><option value="302">302</option><option value="303">303</option>
-              <option value="401">401</option><option value="402">402</option><option value="403">403</option>
-              <option value="501">501</option><option value="502">502</option><option value="503">503</option>
-              <option value="601">601</option><option value="602">602</option><option value="603">603</option>
-              <option value="701">701</option><option value="702">702</option><option value="703">703</option>
-              <option value="801">801</option><option value="802">802</option><option value="803">803</option>
-              <option value="901">901</option><option value="902">902</option><option value="903">903</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">नाव <span class="required">*</span></label>
-            <input type="text" id="name" class="form-input" required placeholder="तुमचे नाव">
-          </div>
+        <div class="form-group">
+          <label class="form-label">सदनिका क्रमांक <span class="required">*</span></label>
+          <select id="flat" class="form-input" required>
+            <option value="">-- निवडा --</option>
+            <option value="101">101</option><option value="102">102</option><option value="103">103</option>
+            <option value="201">201</option><option value="202">202</option><option value="203">203</option>
+            <option value="301">301</option><option value="302">302</option><option value="303">303</option>
+            <option value="401">401</option><option value="402">402</option><option value="403">403</option>
+            <option value="501">501</option><option value="502">502</option><option value="503">503</option>
+            <option value="601">601</option><option value="602">602</option><option value="603">603</option>
+            <option value="701">701</option><option value="702">702</option><option value="703">703</option>
+            <option value="801">801</option><option value="802">802</option><option value="803">803</option>
+            <option value="901">901</option><option value="902">902</option><option value="903">903</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">नाव <span class="required">*</span></label>
+          <input type="text" id="name" class="form-input" required placeholder="तुमचे नाव">
         </div>
 
         <div class="form-group">
@@ -821,7 +1157,7 @@
           <label class="form-label">तुमची सूचना / तक्रार <span class="required">*</span></label>
           <textarea id="description" class="form-input" required
             placeholder="तुमची तक्रार किंवा सूचना इथे लिहा. English किंवा मराठी — दोन्ही चालेल. एका वेळी अनेक तक्रारी लिहू शकता."></textarea>
-          <div class="form-hint">अनेक तक्रारी स्वयंचलितपणे वेगळ्या केल्या जातील, प्राधान्य ठरवले जाईल, आणि मागील तक्रारींशी जोडल्या जातील</div>
+          <div class="form-hint">अनेक तक्रारी स्वयंचलितपणे वेगळ्या केल्या जातील आणि मागील तक्रारींशी जोडल्या जातील</div>
         </div>
 
         <div class="form-group">
@@ -841,21 +1177,84 @@
           <div class="photo-preview" id="photoPreview"></div>
         </div>
 
-        <div class="form-submit-desktop">
-          <button type="submit" class="submit-btn" id="submitBtn">सबमिट करा</button>
-        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">सबमिट करा</button>
       </form>
-    </div>
 
-    <div class="footer">
-      अनुप्रिता बी को. हौ. सो. लि.
+      <div class="footer">
+        <div>अनुप्रिता बी को. हौ. सो. लि.</div>
+        <div class="footer-tagline">AI-सहाय्यित तक्रार व्यवस्थापन &middot; <span class="footer-year"></span></div>
+      </div>
     </div>
   </div>
 
-  <!-- Sticky mobile submit -->
-  <div class="sticky-submit">
-    <button type="button" class="submit-btn" id="submitBtnMobile" onclick="triggerSubmit()">सबमिट करा</button>
+  <!-- ============ PAGE: Tracker ============ -->
+  <div class="page" id="pageTracker">
+    <div class="container">
+
+      <!-- Stats Grid -->
+      <div id="statsGrid" class="stats-grid"></div>
+
+      <!-- Issues Section -->
+      <div class="section-card fade-in-up" style="animation-delay: 0.1s">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="section-icon icon-issues"></div>
+            सद्यस्थिती
+          </div>
+          <button class="mc-login-btn" id="mcLoginBtn" onclick="handleMcLogin()">MC लॉगिन</button>
+        </div>
+
+        <!-- Tab Switcher -->
+        <div class="tab-switcher">
+          <button class="tab-btn active" onclick="switchTab('table', this)">सूची</button>
+          <button class="tab-btn" onclick="switchTab('kanban', this)">बोर्ड</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters" id="filterBar"></div>
+
+        <!-- Table View (default) -->
+        <div id="tableView">
+          <div id="issuesList">
+            <table class="skeleton-table">
+              <tr><td><div class="skeleton-line skeleton-line-short"></div></td><td><div class="skeleton-line skeleton-line-long"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-line skeleton-line-short"></div></td></tr>
+              <tr><td><div class="skeleton-line skeleton-line-short"></div></td><td><div class="skeleton-line skeleton-line-medium"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-line skeleton-line-short"></div></td></tr>
+              <tr><td><div class="skeleton-line skeleton-line-short"></div></td><td><div class="skeleton-line skeleton-line-long"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-line skeleton-line-short"></div></td></tr>
+              <tr><td><div class="skeleton-line skeleton-line-short"></div></td><td><div class="skeleton-line skeleton-line-medium"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-line skeleton-line-short"></div></td></tr>
+              <tr><td><div class="skeleton-line skeleton-line-short"></div></td><td><div class="skeleton-line skeleton-line-long"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-line skeleton-line-short"></div></td></tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- Kanban View -->
+        <div id="kanbanView" class="kanban-board"></div>
+      </div>
+
+      <div class="footer">
+        <div>अनुप्रिता बी को. हौ. सो. लि.</div>
+        <div class="footer-tagline">AI-सहाय्यित तक्रार व्यवस्थापन &middot; <span class="footer-year"></span></div>
+      </div>
+    </div>
   </div>
+
+  <!-- ============ Bottom Navigation ============ -->
+  <nav class="bottom-nav">
+    <button class="nav-tab" data-page="submit" onclick="navigateTo('submit')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+      </svg>
+      <span>तक्रार नोंदणी</span>
+    </button>
+    <button class="nav-tab" data-page="tracker" onclick="navigateTo('tracker')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 20V10"/>
+        <path d="M12 20V4"/>
+        <path d="M6 20v-6"/>
+      </svg>
+      <span>सद्यस्थिती</span>
+    </button>
+  </nav>
 
   <!-- Processing Overlay -->
   <div class="ai-overlay" id="aiOverlay">
@@ -869,14 +1268,41 @@
     </div>
   </div>
 
+  <!-- MC PIN Modal -->
+  <div class="pin-modal" id="pinModal">
+    <div class="pin-box">
+      <h3>MC लॉगिन</h3>
+      <p>4-अंकी PIN टाका</p>
+      <input type="password" class="pin-input" id="pinInput" maxlength="4" pattern="[0-9]{4}" inputmode="numeric">
+      <div class="pin-error" id="pinError"></div>
+      <div class="pin-actions">
+        <button class="pin-cancel" onclick="closePinModal()">रद्द करा</button>
+        <button class="pin-submit" onclick="submitPin()">लॉगिन</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ============================================================
+    // Apps Script API URL
+    // ============================================================
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKE2nB5BRQv_lnNsDc2-ZVcEc9OaOVf4icp6vHv9kA5lUZBVnckG109u9ejb4MKg7a/exec';
+
     // ============================================================
     // State
     // ============================================================
     var allIssues = [];
     var currentFilter = 'all';
+    var currentTab = 'table';
     var selectedPhotos = [];
     var loadTimeout = null;
+    var isMcAuthenticated = false;
+    var currentPage = 'submit';
+    var trackerDataLoaded = false;
+
+    // English status keys for safe HTTP transport (avoids Marathi encoding issues)
+    var STATUS_TO_KEY = { 'नवीन': 'new', 'प्रगतीत': 'progress', 'निराकरण': 'resolved' };
+    var KEY_TO_STATUS = { 'new': 'नवीन', 'progress': 'प्रगतीत', 'resolved': 'निराकरण' };
 
     var statusMessages = [
       'तक्रार विश्लेषण सुरू...',
@@ -888,42 +1314,108 @@
     ];
 
     // ============================================================
+    // Router
+    // ============================================================
+    function navigateTo(page) {
+      if (page === currentPage) return;
+      document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelector('.nav-tab[data-page="' + page + '"]').classList.add('active');
+      document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+      history.replaceState(null, '', '#' + page);
+      currentPage = page;
+      if (page === 'tracker' && !trackerDataLoaded) {
+        loadIssues();
+        trackerDataLoaded = true;
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function initRouter() {
+      var hash = location.hash.replace('#', '');
+      var page = (hash === 'tracker') ? 'tracker' : 'submit';
+      document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+      document.querySelector('.nav-tab[data-page="' + page + '"]').classList.add('active');
+      currentPage = page;
+      if (page === 'tracker') {
+        loadIssues();
+        trackerDataLoaded = true;
+      }
+    }
+
+    window.addEventListener('hashchange', function() {
+      var page = location.hash.replace('#', '') === 'tracker' ? 'tracker' : 'submit';
+      navigateTo(page);
+    });
+
+    // ============================================================
     // Load on DOMContentLoaded
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-      loadIssues();
+      document.querySelectorAll('.footer-year').forEach(function(el) {
+        el.textContent = new Date().getFullYear();
+      });
+
+      // Restore MC auth from sessionStorage (Bug 1 fix)
+      if (sessionStorage.getItem('mcAuth') === 'true') {
+        isMcAuthenticated = true;
+        document.getElementById('mcLoginBtn').classList.add('active');
+        document.getElementById('mcLoginBtn').textContent = 'MC मोड';
+      }
+
+      initRouter();
     });
 
     function loadIssues() {
-      console.log('[Tracker] Loading issues...');
+      console.log('[Tracker] Loading issues via fetch...');
 
-      // Show skeleton loading
       document.getElementById('issuesList').innerHTML =
-        '<div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>' +
-        '<div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-medium"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>' +
-        '<div class="skeleton-card"><div class="skeleton-line skeleton-line-short"></div><div class="skeleton-line skeleton-line-long"></div><div class="skeleton-badges"><div class="skeleton-badge"></div><div class="skeleton-badge"></div></div></div>';
+        '<table class="skeleton-table">' +
+        '<tr><td><div class="skeleton-line skeleton-line-short"></div></td><td><div class="skeleton-line skeleton-line-long"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-badge-sm"></div></td><td><div class="skeleton-line skeleton-line-short"></div></td></tr>'.repeat(5) +
+        '</table>';
 
-      // 15-second timeout
       loadTimeout = setTimeout(function() {
         console.log('[Tracker] Load timeout after 15 seconds');
         showLoadError('तक्रारी लोड होण्यास वेळ लागत आहे');
       }, 15000);
 
-      google.script.run
-        .withSuccessHandler(function(issues) {
+      fetch(SCRIPT_URL + '?action=getIssues')
+        .then(function(r) { return r.text(); })
+        .then(function(text) {
           clearTimeout(loadTimeout);
-          console.log('[Tracker] Issues loaded:', issues ? issues.length : 0);
-          allIssues = issues || [];
-          renderStats();
-          renderFilters();
-          renderIssues();
+          try {
+            var data = JSON.parse(text);
+            if (data.success) {
+              console.log('[Tracker] Issues loaded:', data.issues ? data.issues.length : 0);
+              allIssues = (data.issues || []).map(function(issue) {
+                // Normalize status using statusKey to avoid Marathi encoding issues
+                if (issue.statusKey && KEY_TO_STATUS[issue.statusKey]) {
+                  issue.status = KEY_TO_STATUS[issue.statusKey];
+                }
+                // Normalize category: keep English keys as-is (builder/society)
+                // Map Marathi to English keys for consistent filtering
+                if (issue.category === 'बिल्डर') issue.category = 'builder';
+                if (issue.category === 'सोसायटी') issue.category = 'society';
+                return issue;
+              });
+              renderStats();
+              renderFilters();
+              renderIssues();
+              renderKanban();
+            } else {
+              console.error('[Tracker] API error:', data.error);
+              showLoadError('तक्रारी लोड करता आल्या नाहीत');
+            }
+          } catch (parseErr) {
+            console.error('[Tracker] JSON parse error:', parseErr, 'Raw:', text.substring(0, 200));
+            showLoadError('तक्रारी लोड करता आल्या नाहीत');
+          }
         })
-        .withFailureHandler(function(err) {
+        .catch(function(err) {
           clearTimeout(loadTimeout);
-          console.error('[Tracker] Load failed:', err);
-          showLoadError('तक्रारी लोड करता आल्या नाहीत');
-        })
-        .getIssueRegister();
+          console.error('[Tracker] Fetch failed:', err);
+          showLoadError('नेटवर्क कनेक्शन तपासा');
+        });
     }
 
     function showLoadError(message) {
@@ -944,42 +1436,76 @@
     }
 
     // ============================================================
-    // Render Stats
+    // Tab Switching
     // ============================================================
-    function renderStats() {
-      var total = allIssues.length;
-      var builder = allIssues.filter(function(i) { return i.category === 'बिल्डर'; }).length;
-      var society = allIssues.filter(function(i) { return i.category === 'सोसायटी'; }).length;
-      var resolved = allIssues.filter(function(i) { return i.status === 'निराकरण'; }).length;
+    function switchTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
 
-      document.getElementById('statsGrid').innerHTML =
-        '<div class="stat-card stat-total">' +
-          '<div class="stat-number">' + total + '</div>' +
-          '<div class="stat-label">एकूण तक्रारी</div>' +
-        '</div>' +
-        '<div class="stat-card stat-builder">' +
-          '<div class="stat-number">' + builder + '</div>' +
-          '<div class="stat-label">बिल्डर</div>' +
-        '</div>' +
-        '<div class="stat-card stat-society">' +
-          '<div class="stat-number">' + society + '</div>' +
-          '<div class="stat-label">सोसायटी</div>' +
-        '</div>' +
-        '<div class="stat-card stat-resolved">' +
-          '<div class="stat-number">' + resolved + '</div>' +
-          '<div class="stat-label">निराकरण</div>' +
-        '</div>';
+      if (tab === 'table') {
+        document.getElementById('tableView').style.display = 'block';
+        document.getElementById('kanbanView').classList.remove('active');
+        renderIssues();
+      } else {
+        document.getElementById('tableView').style.display = 'none';
+        document.getElementById('kanbanView').classList.add('active');
+        renderKanban();
+      }
     }
 
     // ============================================================
-    // Render Filters
+    // Render Stats (with count-up animation)
+    // ============================================================
+    function isBuilder(i) { return i.category === 'बिल्डर' || i.category === 'builder'; }
+    function isSociety(i) { return i.category === 'सोसायटी' || i.category === 'society'; }
+
+    function renderStats() {
+      var total = allIssues.length;
+      var builder = allIssues.filter(isBuilder).length;
+      var society = allIssues.filter(isSociety).length;
+      var resolved = allIssues.filter(function(i) { return i.status === 'निराकरण'; }).length;
+
+      var stats = [
+        { cls: 'stat-total', value: total, label: 'एकूण तक्रारी' },
+        { cls: 'stat-builder', value: builder, label: 'बिल्डर' },
+        { cls: 'stat-society', value: society, label: 'सोसायटी' },
+        { cls: 'stat-resolved', value: resolved, label: 'निराकरण' }
+      ];
+
+      document.getElementById('statsGrid').innerHTML = stats.map(function(s) {
+        return '<div class="stat-card ' + s.cls + '">' +
+          '<div class="stat-number" data-target="' + s.value + '">0</div>' +
+          '<div class="stat-label">' + s.label + '</div>' +
+        '</div>';
+      }).join('');
+
+      // Animate numbers
+      document.querySelectorAll('.stat-number[data-target]').forEach(function(el) {
+        var target = parseInt(el.getAttribute('data-target'));
+        if (target === 0) { el.textContent = '0'; return; }
+        var start = 0;
+        var duration = 300;
+        var startTime = null;
+        function step(ts) {
+          if (!startTime) startTime = ts;
+          var progress = Math.min((ts - startTime) / duration, 1);
+          el.textContent = Math.floor(progress * target);
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = target;
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    // ============================================================
+    // Render Filters (no priority/तातडी filter)
     // ============================================================
     function renderFilters() {
       var counts = {
         all: allIssues.length,
-        builder: allIssues.filter(function(i) { return i.category === 'बिल्डर'; }).length,
-        society: allIssues.filter(function(i) { return i.category === 'सोसायटी'; }).length,
-        high: allIssues.filter(function(i) { return i.priority && i.priority.indexOf('High') !== -1; }).length,
+        builder: allIssues.filter(isBuilder).length,
+        society: allIssues.filter(isSociety).length,
         progress: allIssues.filter(function(i) { return i.status === 'प्रगतीत'; }).length,
         resolved: allIssues.filter(function(i) { return i.status === 'निराकरण'; }).length
       };
@@ -988,7 +1514,6 @@
         { key: 'all', label: 'सर्व' },
         { key: 'builder', label: 'बिल्डर' },
         { key: 'society', label: 'सोसायटी' },
-        { key: 'high', label: 'तातडी' },
         { key: 'progress', label: 'प्रगतीत' },
         { key: 'resolved', label: 'निराकरण' }
       ];
@@ -1004,71 +1529,281 @@
     }
 
     // ============================================================
-    // Render Issues
+    // Render Table View
     // ============================================================
     function renderIssues() {
       try {
-      var filtered = filterIssues(allIssues, currentFilter);
-      var list = document.getElementById('issuesList');
-      console.log('[Tracker] Rendering', filtered.length, 'issues');
+        var filtered = filterIssues(allIssues, currentFilter);
+        var list = document.getElementById('issuesList');
+        console.log('[Tracker] Rendering', filtered.length, 'issues in table');
 
-      if (filtered.length === 0) {
-        list.innerHTML =
-          '<div class="empty-state">' +
-            '<svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
-              '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>' +
-              '<polyline points="14 2 14 8 20 8"/>' +
-              '<line x1="16" y1="13" x2="8" y2="13"/>' +
-              '<line x1="16" y1="17" x2="8" y2="17"/>' +
-            '</svg>' +
-            '<div class="empty-title">या प्रकारच्या तक्रारी सापडल्या नाहीत</div>' +
-            '<div class="empty-sub">नवीन तक्रार नोंदवण्यासाठी खालील फॉर्म वापरा</div>' +
-          '</div>';
-        return;
-      }
+        if (filtered.length === 0) {
+          list.innerHTML =
+            '<div class="empty-state">' +
+              '<svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>' +
+                '<polyline points="14 2 14 8 20 8"/>' +
+                '<line x1="16" y1="13" x2="8" y2="13"/>' +
+                '<line x1="16" y1="17" x2="8" y2="17"/>' +
+              '</svg>' +
+              '<div class="empty-title">या प्रकारच्या तक्रारी सापडल्या नाहीत</div>' +
+              '<div class="empty-sub">नवीन तक्रार नोंदवण्यासाठी तक्रार नोंदणी पेज वापरा</div>' +
+            '</div>';
+          return;
+        }
 
-      list.innerHTML = filtered.map(function(issue, idx) {
-        var rb = issue.reportedBy ? String(issue.reportedBy) : '';
-        var flats = rb ? rb.split(',').map(function(f) { return f.trim(); }) : [];
-        var flatChips = flats.slice(0, 5).map(function(f) {
-          return '<span class="flat-chip">' + escapeHtml(f) + '</span>';
+        var html = '<div class="issues-table-wrap"><table class="issues-table">' +
+          '<thead><tr>' +
+            '<th>#</th>' +
+            '<th>तक्रार</th>' +
+            '<th>प्रकार</th>' +
+            '<th>स्थिती</th>' +
+            '<th>तक्रारी</th>' +
+          '</tr></thead><tbody>';
+
+        html += filtered.map(function(issue) {
+          return '<tr>' +
+            '<td class="col-num">' + issue.issueNo + '</td>' +
+            '<td class="col-issue">' + escapeHtml(issue.issue) + '</td>' +
+            '<td class="col-cat">' + getCategoryBadge(issue.category) + '</td>' +
+            '<td class="col-status">' + getStatusBadge(issue.status) + '</td>' +
+            '<td class="col-count"><span class="count-circle">' + (issue.count || 0) + '</span></td>' +
+          '</tr>';
         }).join('');
-        if (flats.length > 5) flatChips += '<span class="flat-chip">+' + (flats.length - 5) + '</span>';
 
-        var priorityClass = '';
-        if (issue.priority && issue.priority.indexOf('High') !== -1) priorityClass = ' priority-high';
-        else if (issue.priority && issue.priority.indexOf('Medium') !== -1) priorityClass = ' priority-medium';
-        else if (issue.priority && issue.priority.indexOf('Low') !== -1) priorityClass = ' priority-low';
-
-        return '<div class="issue-card' + priorityClass + '" style="animation-delay: ' + (idx * 0.04) + 's">' +
-          '<div class="issue-card-header">' +
-            '<span class="issue-number">#' + issue.issueNo + '</span>' +
-            '<div class="issue-title">' + escapeHtml(issue.issue) + '</div>' +
-          '</div>' +
-          '<div class="issue-meta">' +
-            getCategoryBadge(issue.category) +
-            getPriorityBadge(issue.priority) +
-            getStatusBadge(issue.status) +
-          '</div>' +
-          '<div class="issue-flats">' +
-            '<span class="flats-label">सदनिका:</span>' +
-            flatChips +
-            '<span class="complaint-count">' + (issue.count || 0) + '</span>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-      console.log('[Tracker] Render complete');
+        html += '</tbody></table></div>';
+        list.innerHTML = html;
+        console.log('[Tracker] Table render complete');
       } catch(e) {
         console.error('[Tracker] Render error:', e.message, e.stack);
         showLoadError('तक्रारी दाखवता आल्या नाहीत: ' + e.message);
       }
     }
 
+    // ============================================================
+    // Render Kanban Board
+    // ============================================================
+    function renderKanban() {
+      var filtered = filterIssues(allIssues, currentFilter);
+      var kanbanEl = document.getElementById('kanbanView');
+
+      var categories = ['builder', 'society'];
+      var categoryLabels = { 'builder': 'बिल्डर', 'society': 'सोसायटी' };
+      var statuses = ['नवीन', 'प्रगतीत', 'निराकरण'];
+      var dotClasses = { 'builder': 'lane-dot-builder', 'society': 'lane-dot-society' };
+
+      var html = '';
+
+      categories.forEach(function(cat) {
+        var catIssues = filtered.filter(function(i) { return i.category === cat || i.category === categoryLabels[cat]; });
+
+        html += '<div class="swim-lane">';
+        html += '<div class="swim-lane-header"><span class="lane-dot ' + dotClasses[cat] + '"></span>' + (categoryLabels[cat] || cat) + '</div>';
+        html += '<div class="swim-lane-body">';
+
+        statuses.forEach(function(status) {
+          var colIssues = catIssues.filter(function(i) { return i.status === status; });
+          var colId = 'col-' + cat + '-' + status;
+
+          html += '<div class="kanban-column" id="' + colId + '" data-category="' + cat + '" data-status="' + status + '" data-status-key="' + STATUS_TO_KEY[status] + '"' +
+            (isMcAuthenticated ? ' ondragover="kanbanDragOver(event)" ondrop="kanbanDrop(event)" ondragleave="kanbanDragLeave(event)"' : '') + '>';
+          html += '<div class="kanban-col-header">' + status +
+            ' <span class="kanban-col-count">' + colIssues.length + '</span></div>';
+
+          colIssues.forEach(function(issue) {
+            var rb = issue.reportedBy ? String(issue.reportedBy) : '';
+            var flats = rb ? rb.split(',').map(function(f) { return f.trim(); }) : [];
+            var flatChips = flats.slice(0, 3).map(function(f) {
+              return '<span class="kanban-flat-chip">' + escapeHtml(f) + '</span>';
+            }).join('');
+            if (flats.length > 3) flatChips += '<span class="kanban-flat-chip">+' + (flats.length - 3) + '</span>';
+
+            var draggable = isMcAuthenticated ? ' draggable="true" ondragstart="kanbanDragStart(event)"' : '';
+            var draggableClass = isMcAuthenticated ? ' draggable' : '';
+
+            html += '<div class="kanban-card' + draggableClass + '" data-issue-no="' + issue.issueNo + '" data-category="' + cat + '"' + draggable + '>' +
+              '<div class="kanban-card-header">' +
+                '<span class="kanban-card-num">#' + issue.issueNo + '</span>' +
+                '<span class="kanban-card-count">' + (issue.count || 0) + '</span>' +
+              '</div>' +
+              '<div class="kanban-card-title">' + escapeHtml(issue.issue) + '</div>' +
+              (flatChips ? '<div class="kanban-card-flats">' + flatChips + '</div>' : '') +
+            '</div>';
+          });
+
+          html += '</div>';
+        });
+
+        html += '</div></div>';
+      });
+
+      kanbanEl.innerHTML = html;
+    }
+
+    // ============================================================
+    // Kanban Drag & Drop (MC only)
+    // ============================================================
+    var draggedIssueNo = null;
+    var draggedCategory = null;
+
+    function kanbanDragStart(e) {
+      draggedIssueNo = e.target.getAttribute('data-issue-no');
+      draggedCategory = e.target.getAttribute('data-category');
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', draggedIssueNo);
+    }
+
+    function kanbanDragOver(e) {
+      e.preventDefault();
+      var col = e.currentTarget;
+      if (col.getAttribute('data-category') === draggedCategory) {
+        col.classList.add('drag-over');
+        e.dataTransfer.dropEffect = 'move';
+      }
+    }
+
+    function kanbanDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function kanbanDrop(e) {
+      e.preventDefault();
+      var col = e.currentTarget;
+      col.classList.remove('drag-over');
+
+      var targetCategory = col.getAttribute('data-category');
+      var targetStatus = col.getAttribute('data-status');
+      var targetStatusKey = col.getAttribute('data-status-key');
+
+      if (targetCategory !== draggedCategory) return;
+
+      // Remove dragging class
+      document.querySelectorAll('.kanban-card.dragging').forEach(function(el) {
+        el.classList.remove('dragging');
+      });
+
+      // Update status via API using English key for safe transport
+      updateIssueStatus(draggedIssueNo, targetStatus, targetStatusKey);
+    }
+
+    function updateIssueStatus(issueNo, newStatus, statusKey) {
+      // Derive statusKey if not provided (e.g. from touch handler)
+      if (!statusKey) statusKey = STATUS_TO_KEY[newStatus] || newStatus;
+
+      // Optimistic update
+      allIssues.forEach(function(issue) {
+        if (issue.issueNo == issueNo) {
+          issue.status = newStatus;
+        }
+      });
+      renderKanban();
+      renderStats();
+      renderFilters();
+      if (currentTab === 'table') renderIssues();
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'updateStatus', issueNo: issueNo, statusKey: statusKey })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.success) {
+            console.error('[Tracker] Status update failed:', data.error);
+            loadIssues(); // Reload to revert
+          }
+        })
+        .catch(function(err) {
+          console.error('[Tracker] Status update fetch failed:', err);
+          loadIssues();
+        });
+    }
+
+    // ============================================================
+    // Touch drag support for mobile Kanban
+    // ============================================================
+    (function() {
+      var touchCard = null;
+      var touchClone = null;
+      var touchStartX, touchStartY;
+
+      document.addEventListener('touchstart', function(e) {
+        var card = e.target.closest('.kanban-card.draggable');
+        if (!card) return;
+        touchCard = card;
+        draggedIssueNo = card.getAttribute('data-issue-no');
+        draggedCategory = card.getAttribute('data-category');
+        var touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', function(e) {
+        if (!touchCard) return;
+        var touch = e.touches[0];
+        var dx = Math.abs(touch.clientX - touchStartX);
+        var dy = Math.abs(touch.clientY - touchStartY);
+        if (dx > 10 || dy > 10) {
+          e.preventDefault();
+          if (!touchClone) {
+            touchClone = touchCard.cloneNode(true);
+            touchClone.style.position = 'fixed';
+            touchClone.style.zIndex = '9999';
+            touchClone.style.width = touchCard.offsetWidth + 'px';
+            touchClone.style.opacity = '0.85';
+            touchClone.style.pointerEvents = 'none';
+            touchClone.style.transform = 'rotate(2deg)';
+            document.body.appendChild(touchClone);
+            touchCard.style.opacity = '0.3';
+          }
+          touchClone.style.left = (touch.clientX - touchCard.offsetWidth / 2) + 'px';
+          touchClone.style.top = (touch.clientY - 20) + 'px';
+
+          // Highlight target column
+          document.querySelectorAll('.kanban-column.drag-over').forEach(function(c) { c.classList.remove('drag-over'); });
+          var target = document.elementFromPoint(touch.clientX, touch.clientY);
+          if (target) {
+            var col = target.closest('.kanban-column');
+            if (col && col.getAttribute('data-category') === draggedCategory) {
+              col.classList.add('drag-over');
+            }
+          }
+        }
+      }, { passive: false });
+
+      document.addEventListener('touchend', function(e) {
+        if (!touchCard || !touchClone) {
+          touchCard = null;
+          return;
+        }
+
+        var touch = e.changedTouches[0];
+        var target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target) {
+          var col = target.closest('.kanban-column');
+          if (col && col.getAttribute('data-category') === draggedCategory) {
+            var newStatus = col.getAttribute('data-status');
+            var newStatusKey = col.getAttribute('data-status-key');
+            updateIssueStatus(draggedIssueNo, newStatus, newStatusKey);
+          }
+        }
+
+        document.querySelectorAll('.kanban-column.drag-over').forEach(function(c) { c.classList.remove('drag-over'); });
+        touchCard.style.opacity = '';
+        if (touchClone && touchClone.parentNode) touchClone.parentNode.removeChild(touchClone);
+        touchCard = null;
+        touchClone = null;
+      }, { passive: true });
+    })();
+
+    // ============================================================
+    // Filter Logic (no priority filter)
+    // ============================================================
     function filterIssues(issues, filter) {
       switch(filter) {
-        case 'builder': return issues.filter(function(i) { return i.category === 'बिल्डर'; });
-        case 'society': return issues.filter(function(i) { return i.category === 'सोसायटी'; });
-        case 'high': return issues.filter(function(i) { return i.priority && i.priority.indexOf('High') !== -1; });
+        case 'builder': return issues.filter(isBuilder);
+        case 'society': return issues.filter(isSociety);
         case 'progress': return issues.filter(function(i) { return i.status === 'प्रगतीत'; });
         case 'resolved': return issues.filter(function(i) { return i.status === 'निराकरण'; });
         default: return issues;
@@ -1080,32 +1815,40 @@
       document.querySelectorAll('.filter-pill').forEach(function(b) { b.classList.remove('active'); });
       btn.classList.add('active');
       renderIssues();
+      if (currentTab === 'kanban') renderKanban();
     }
 
     // ============================================================
-    // Badge Helpers
+    // Badge Helpers (no priority badge)
     // ============================================================
-    function getPriorityBadge(p) {
-      if (!p) return '';
-      if (p.indexOf('High') !== -1) return '<span class="badge badge-high"><span class="priority-dot"></span>तातडी</span>';
-      if (p.indexOf('Medium') !== -1) return '<span class="badge badge-medium"><span class="priority-dot"></span>मध्यम</span>';
-      if (p.indexOf('Low') !== -1) return '<span class="badge badge-low"><span class="priority-dot"></span>कमी</span>';
-      return '<span class="badge">' + escapeHtml(p) + '</span>';
-    }
-
     function getStatusBadge(s) {
       if (!s) return '';
+      // Try direct match first
       if (s === 'नवीन') return '<span class="badge badge-new">' + s + '</span>';
       if (s === 'प्रगतीत') return '<span class="badge badge-progress">' + s + '</span>';
       if (s === 'निराकरण') return '<span class="badge badge-resolved">' + s + '</span>';
+      // Fallback: try English key lookup (handles encoding-corrupted Marathi)
+      if (KEY_TO_STATUS[s]) {
+        var normalized = KEY_TO_STATUS[s];
+        if (normalized === 'नवीन') return '<span class="badge badge-new">' + normalized + '</span>';
+        if (normalized === 'प्रगतीत') return '<span class="badge badge-progress">' + normalized + '</span>';
+        if (normalized === 'निराकरण') return '<span class="badge badge-resolved">' + normalized + '</span>';
+      }
       return '<span class="badge">' + escapeHtml(s) + '</span>';
     }
 
+    // Category key → Marathi display mapping
+    var CATEGORY_KEY_TO_LABEL = { 'builder': 'बिल्डर', 'society': 'सोसायटी' };
+
+    // Priority key → display mapping
+    var PRIORITY_KEY_TO_LABEL = { 'High': '🔴 High', 'Medium': '🟡 Medium', 'Low': '🟢 Low' };
+
     function getCategoryBadge(c) {
       if (!c) return '';
-      if (c === 'बिल्डर') return '<span class="badge badge-builder">' + c + '</span>';
-      if (c === 'सोसायटी') return '<span class="badge badge-society">' + c + '</span>';
-      return '<span class="badge">' + escapeHtml(c) + '</span>';
+      // Handle English keys from backend
+      var label = CATEGORY_KEY_TO_LABEL[c] || c;
+      var cls = (c === 'बिल्डर' || c === 'builder') ? 'badge-builder' : (c === 'सोसायटी' || c === 'society') ? 'badge-society' : '';
+      return '<span class="badge ' + cls + '">' + escapeHtml(label) + '</span>';
     }
 
     function escapeHtml(text) {
@@ -1114,6 +1857,67 @@
       div.textContent = String(text);
       return div.innerHTML;
     }
+
+    // ============================================================
+    // MC Login / PIN
+    // ============================================================
+    function handleMcLogin() {
+      if (isMcAuthenticated) {
+        isMcAuthenticated = false;
+        sessionStorage.removeItem('mcAuth');
+        document.getElementById('mcLoginBtn').classList.remove('active');
+        document.getElementById('mcLoginBtn').textContent = 'MC लॉगिन';
+        if (currentTab === 'kanban') renderKanban();
+        return;
+      }
+      document.getElementById('pinModal').classList.add('show');
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinError').textContent = '';
+      setTimeout(function() { document.getElementById('pinInput').focus(); }, 100);
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').classList.remove('show');
+    }
+
+    function submitPin() {
+      var pin = document.getElementById('pinInput').value.trim();
+      if (pin.length !== 4) {
+        document.getElementById('pinError').textContent = '4 अंक टाका';
+        return;
+      }
+
+      fetch(SCRIPT_URL + '?action=verifyPin&pin=' + encodeURIComponent(pin))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.valid) {
+            isMcAuthenticated = true;
+            sessionStorage.setItem('mcAuth', 'true');
+            document.getElementById('mcLoginBtn').classList.add('active');
+            document.getElementById('mcLoginBtn').textContent = 'MC मोड';
+            closePinModal();
+            if (currentTab === 'kanban') renderKanban();
+          } else {
+            document.getElementById('pinError').textContent = 'चुकीचा PIN';
+            document.getElementById('pinInput').value = '';
+            document.getElementById('pinInput').focus();
+          }
+        })
+        .catch(function(err) {
+          document.getElementById('pinError').textContent = 'कनेक्शन त्रुटी';
+          console.error('[Tracker] PIN verify failed:', err);
+        });
+    }
+
+    // Allow Enter key in PIN input
+    document.addEventListener('DOMContentLoaded', function() {
+      var pinInput = document.getElementById('pinInput');
+      if (pinInput) {
+        pinInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') submitPin();
+        });
+      }
+    });
 
     // ============================================================
     // Photo Handling
@@ -1162,10 +1966,6 @@
     // ============================================================
     // Form Submit
     // ============================================================
-    function triggerSubmit() {
-      document.getElementById('complaintForm').requestSubmit();
-    }
-
     function handleSubmit(e) {
       e.preventDefault();
 
@@ -1176,6 +1976,16 @@
 
       if (!flat || !name || !phone || !description) {
         alert('कृपया सर्व आवश्यक माहिती भरा.');
+        return;
+      }
+
+      // Client-side validation: reject too-short or emoji-only descriptions
+      if (description.length < 5) {
+        alert('कृपया तक्रार किमान 5 अक्षरांमध्ये लिहा.');
+        return;
+      }
+      if (/^[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Component}\s]+$/u.test(description)) {
+        alert('कृपया तक्रार शब्दांमध्ये लिहा. केवळ इमोजी पुरेसे नाहीत.');
         return;
       }
 
@@ -1191,24 +2001,32 @@
         })
       };
 
-      google.script.run
-        .withSuccessHandler(function(result) {
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(formData)
+      })
+        .then(function(r) { return r.text(); })
+        .then(function(text) {
           hideProcessingOverlay();
-
-          if (result.success) {
-            showSuccess(result.results);
-            resetForm();
-            loadIssues();
-          } else {
-            alert('तक्रार नोंदवता आली नाही: ' + (result.error || 'Unknown error'));
+          try {
+            var result = JSON.parse(text);
+            if (result.success) {
+              showSuccess(result.results);
+              resetForm();
+            } else {
+              alert('तक्रार नोंदवता आली नाही: ' + (result.error || 'Unknown error'));
+            }
+          } catch (parseErr) {
+            console.error('[Tracker] Submit response parse error:', parseErr, 'Raw:', text.substring(0, 200));
+            alert('तक्रार नोंदवता आली नाही. कृपया पुन्हा प्रयत्न करा.');
           }
         })
-        .withFailureHandler(function(err) {
+        .catch(function(err) {
           hideProcessingOverlay();
-          console.error('[Tracker] Submit failed:', err);
-          alert('तक्रार नोंदवता आली नाही. कृपया पुन्हा प्रयत्न करा.');
-        })
-        .submitComplaint(formData);
+          console.error('[Tracker] Submit fetch failed:', err);
+          alert('तक्रार नोंदवता आली नाही. नेटवर्क कनेक्शन तपासा.');
+        });
     }
 
     // ============================================================
@@ -1218,7 +2036,6 @@
 
     function showProcessingOverlay() {
       document.getElementById('submitBtn').disabled = true;
-      document.getElementById('submitBtnMobile').disabled = true;
       document.getElementById('aiProgressBar').style.animation = 'none';
       void document.getElementById('aiProgressBar').offsetWidth;
       document.getElementById('aiProgressBar').style.animation = 'progressBar 12s ease-out forwards';
@@ -1239,7 +2056,6 @@
     function hideProcessingOverlay() {
       document.getElementById('aiOverlay').classList.remove('show');
       document.getElementById('submitBtn').disabled = false;
-      document.getElementById('submitBtnMobile').disabled = false;
       if (statusInterval) {
         clearInterval(statusInterval);
         statusInterval = null;
@@ -1279,7 +2095,7 @@
       card.classList.add('show');
       card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      setTimeout(function() { card.classList.remove('show'); }, 20000);
+      // Don't auto-hide — let user choose to view tracker or close
     }
 
     function closeSuccess() {
@@ -1293,6 +2109,7 @@
       document.getElementById('complaintForm').reset();
       selectedPhotos = [];
       renderPhotoPreview();
+      trackerDataLoaded = false; // Force refresh on next tab switch
     }
   </script>
 

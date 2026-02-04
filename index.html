@@ -1388,10 +1388,14 @@
             if (data.success) {
               console.log('[Tracker] Issues loaded:', data.issues ? data.issues.length : 0);
               allIssues = (data.issues || []).map(function(issue) {
-                // Normalize status using statusKey to avoid Marathi encoding issues (Bug 3 & 4 fix)
+                // Normalize status using statusKey to avoid Marathi encoding issues
                 if (issue.statusKey && KEY_TO_STATUS[issue.statusKey]) {
                   issue.status = KEY_TO_STATUS[issue.statusKey];
                 }
+                // Normalize category: keep English keys as-is (builder/society)
+                // Map Marathi to English keys for consistent filtering
+                if (issue.category === 'बिल्डर') issue.category = 'builder';
+                if (issue.category === 'सोसायटी') issue.category = 'society';
                 return issue;
               });
               renderStats();
@@ -1453,10 +1457,13 @@
     // ============================================================
     // Render Stats (with count-up animation)
     // ============================================================
+    function isBuilder(i) { return i.category === 'बिल्डर' || i.category === 'builder'; }
+    function isSociety(i) { return i.category === 'सोसायटी' || i.category === 'society'; }
+
     function renderStats() {
       var total = allIssues.length;
-      var builder = allIssues.filter(function(i) { return i.category === 'बिल्डर'; }).length;
-      var society = allIssues.filter(function(i) { return i.category === 'सोसायटी'; }).length;
+      var builder = allIssues.filter(isBuilder).length;
+      var society = allIssues.filter(isSociety).length;
       var resolved = allIssues.filter(function(i) { return i.status === 'निराकरण'; }).length;
 
       var stats = [
@@ -1497,8 +1504,8 @@
     function renderFilters() {
       var counts = {
         all: allIssues.length,
-        builder: allIssues.filter(function(i) { return i.category === 'बिल्डर'; }).length,
-        society: allIssues.filter(function(i) { return i.category === 'सोसायटी'; }).length,
+        builder: allIssues.filter(isBuilder).length,
+        society: allIssues.filter(isSociety).length,
         progress: allIssues.filter(function(i) { return i.status === 'प्रगतीत'; }).length,
         resolved: allIssues.filter(function(i) { return i.status === 'निराकरण'; }).length
       };
@@ -1580,17 +1587,18 @@
       var filtered = filterIssues(allIssues, currentFilter);
       var kanbanEl = document.getElementById('kanbanView');
 
-      var categories = ['बिल्डर', 'सोसायटी'];
+      var categories = ['builder', 'society'];
+      var categoryLabels = { 'builder': 'बिल्डर', 'society': 'सोसायटी' };
       var statuses = ['नवीन', 'प्रगतीत', 'निराकरण'];
-      var dotClasses = { 'बिल्डर': 'lane-dot-builder', 'सोसायटी': 'lane-dot-society' };
+      var dotClasses = { 'builder': 'lane-dot-builder', 'society': 'lane-dot-society' };
 
       var html = '';
 
       categories.forEach(function(cat) {
-        var catIssues = filtered.filter(function(i) { return i.category === cat; });
+        var catIssues = filtered.filter(function(i) { return i.category === cat || i.category === categoryLabels[cat]; });
 
         html += '<div class="swim-lane">';
-        html += '<div class="swim-lane-header"><span class="lane-dot ' + dotClasses[cat] + '"></span>' + cat + '</div>';
+        html += '<div class="swim-lane-header"><span class="lane-dot ' + dotClasses[cat] + '"></span>' + (categoryLabels[cat] || cat) + '</div>';
         html += '<div class="swim-lane-body">';
 
         statuses.forEach(function(status) {
@@ -1794,8 +1802,8 @@
     // ============================================================
     function filterIssues(issues, filter) {
       switch(filter) {
-        case 'builder': return issues.filter(function(i) { return i.category === 'बिल्डर'; });
-        case 'society': return issues.filter(function(i) { return i.category === 'सोसायटी'; });
+        case 'builder': return issues.filter(isBuilder);
+        case 'society': return issues.filter(isSociety);
         case 'progress': return issues.filter(function(i) { return i.status === 'प्रगतीत'; });
         case 'resolved': return issues.filter(function(i) { return i.status === 'निराकरण'; });
         default: return issues;
@@ -1829,11 +1837,18 @@
       return '<span class="badge">' + escapeHtml(s) + '</span>';
     }
 
+    // Category key → Marathi display mapping
+    var CATEGORY_KEY_TO_LABEL = { 'builder': 'बिल्डर', 'society': 'सोसायटी' };
+
+    // Priority key → display mapping
+    var PRIORITY_KEY_TO_LABEL = { 'High': '🔴 High', 'Medium': '🟡 Medium', 'Low': '🟢 Low' };
+
     function getCategoryBadge(c) {
       if (!c) return '';
-      if (c === 'बिल्डर') return '<span class="badge badge-builder">' + c + '</span>';
-      if (c === 'सोसायटी') return '<span class="badge badge-society">' + c + '</span>';
-      return '<span class="badge">' + escapeHtml(c) + '</span>';
+      // Handle English keys from backend
+      var label = CATEGORY_KEY_TO_LABEL[c] || c;
+      var cls = (c === 'बिल्डर' || c === 'builder') ? 'badge-builder' : (c === 'सोसायटी' || c === 'society') ? 'badge-society' : '';
+      return '<span class="badge ' + cls + '">' + escapeHtml(label) + '</span>';
     }
 
     function escapeHtml(text) {
@@ -1961,6 +1976,16 @@
 
       if (!flat || !name || !phone || !description) {
         alert('कृपया सर्व आवश्यक माहिती भरा.');
+        return;
+      }
+
+      // Client-side validation: reject too-short or emoji-only descriptions
+      if (description.length < 5) {
+        alert('कृपया तक्रार किमान 5 अक्षरांमध्ये लिहा.');
+        return;
+      }
+      if (/^[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Component}\s]+$/u.test(description)) {
+        alert('कृपया तक्रार शब्दांमध्ये लिहा. केवळ इमोजी पुरेसे नाहीत.');
         return;
       }
 

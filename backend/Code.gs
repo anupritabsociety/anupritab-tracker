@@ -266,7 +266,7 @@ function processWithAI(description, flat, registerSheet) {
 
   if (!extractedIssues || extractedIssues.length === 0) {
     // Fallback: treat entire description as one issue
-    return [processOneIssue(description, 'सोसायटी', flat, registerSheet)];
+    return [processOneIssue(description, 'society', flat, registerSheet)];
   }
 
   // Step 1.5: Validate extracted issues for quality
@@ -301,7 +301,7 @@ function validateExtractedIssues(extractedIssues, originalDescription) {
   }
 
   if (validIssues.length === 0) {
-    return [{ issue: originalDescription.substring(0, 100), category: 'सोसायटी', quality: 'fallback' }];
+    return [{ issue: originalDescription.substring(0, 100), category: 'society', quality: 'fallback' }];
   }
   return validIssues;
 }
@@ -376,8 +376,8 @@ function processOneIssue(issueSummary, category, flat, registerSheet) {
   registerSheet.appendRow([
     nextIssueNo,
     issueSummary,
-    category || 'सोसायटी',
-    priority.priority || '🟡 Medium',
+    category || 'society',
+    priority.priority || 'Medium',
     flat.toString(),
     1,
     'नवीन',
@@ -394,20 +394,24 @@ function processOneIssue(issueSummary, category, flat, registerSheet) {
 }
 
 // ============================================================
-// Gemini AI Functions
+// LLM Functions (Gemini primary, Groq fallback)
 // ============================================================
 
 function getGeminiApiKey() {
   return PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
 }
 
-function callGemini(prompt) {
+function getGroqApiKey() {
+  return PropertiesService.getScriptProperties().getProperty('GROQ_API_KEY');
+}
+
+function callGeminiProvider(prompt) {
   const apiKey = getGeminiApiKey();
   if (!apiKey) {
     throw new Error('Gemini API key not configured. Set GEMINI_API_KEY in Script Properties.');
   }
 
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey;
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + apiKey;
 
   const payload = {
     contents: [{
@@ -441,7 +445,57 @@ function callGemini(prompt) {
   return text;
 }
 
-function parseJsonFromGemini(text) {
+function callGroqProvider(prompt) {
+  const apiKey = getGroqApiKey();
+  if (!apiKey) {
+    throw new Error('Groq API key not configured. Set GROQ_API_KEY in Script Properties.');
+  }
+
+  const url = 'https://api.groq.com/openai/v1/chat/completions';
+
+  const payload = {
+    model: 'llama-3.1-8b-instant',
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.1,
+    max_tokens: 2048
+  };
+
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { 'Authorization': 'Bearer ' + apiKey },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
+  const response = UrlFetchApp.fetch(url, options);
+  const json = JSON.parse(response.getContentText('UTF-8'));
+
+  if (json.error) {
+    Logger.log('Groq API error: ' + JSON.stringify(json.error));
+    throw new Error('Groq API error: ' + json.error.message);
+  }
+
+  return json.choices[0].message.content;
+}
+
+function callLLM(prompt) {
+  // Try Gemini first, fall back to Groq
+  try {
+    return callGeminiProvider(prompt);
+  } catch (geminiErr) {
+    Logger.log('Gemini failed, trying Groq fallback: ' + geminiErr.toString());
+  }
+
+  try {
+    return callGroqProvider(prompt);
+  } catch (groqErr) {
+    Logger.log('Groq fallback also failed: ' + groqErr.toString());
+    throw new Error('All LLM providers failed. Gemini and Groq both unavailable.');
+  }
+}
+
+function parseJsonFromLLM(text) {
   // Extract JSON from markdown code blocks if present
   let cleaned = text.trim();
   const jsonMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -467,7 +521,7 @@ The text may be in Marathi, English, Hindi, or mixed. One description may contai
 Important rules:
 - Each distinct problem should be a separate issue
 - Translate/summarize each issue into clear Marathi
-- Categorize as "बिल्डर" (builder responsibility: structural, lift, plumbing infrastructure, waterproofing, tiles, electrical mains) or "सोसायटी" (society responsibility: security, cleaning, parking management, garden, staff, daily maintenance)
+- Categorize as "builder" (builder responsibility: structural, lift, plumbing infrastructure, waterproofing, tiles, electrical mains) or "society" (society responsibility: security, cleaning, parking management, garden, staff, daily maintenance)
 - Keep summaries concise (under 15 words in Marathi)
 
 STRICT QUALITY RULES:
@@ -481,11 +535,11 @@ STRICT QUALITY RULES:
 Description: "${description}"
 
 Return ONLY a JSON array, no other text:
-[{"issue": "specific issue in Marathi (min 3 words)", "category": "बिल्डर or सोसायटी", "quality": "high or low"}]`;
+[{"issue": "specific issue in Marathi (min 3 words)", "category": "builder or society", "quality": "high or low"}]`;
 
   try {
-    const response = callGemini(prompt);
-    const parsed = parseJsonFromGemini(response);
+    const response = callLLM(prompt);
+    const parsed = parseJsonFromLLM(response);
     if (Array.isArray(parsed)) return parsed;
     return null;
   } catch (e) {
@@ -514,8 +568,8 @@ If no match: {"matches": false}
 Only match if confidence is High or Medium. If unsure, return no match.`;
 
   try {
-    const response = callGemini(prompt);
-    const parsed = parseJsonFromGemini(response);
+    const response = callLLM(prompt);
+    const parsed = parseJsonFromLLM(response);
     if (parsed && typeof parsed.matches !== 'undefined') return parsed;
     return { matches: false };
   } catch (e) {
@@ -531,21 +585,21 @@ function assignPriority(issue) {
 Issue: "${issue}"
 
 Rules:
-- "🔴 High": Safety hazards, water damage/leakage, electrical issues, structural problems, lift malfunction, fire safety
-- "🟡 Medium": Maintenance, cleanliness, staff issues, parking disputes, garden/landscaping, plumbing (minor)
-- "🟢 Low": Cosmetic issues, suggestions, minor inconvenience, painting, signage
+- "High": Safety hazards, water damage/leakage, electrical issues, structural problems, lift malfunction, fire safety
+- "Medium": Maintenance, cleanliness, staff issues, parking disputes, garden/landscaping, plumbing (minor)
+- "Low": Cosmetic issues, suggestions, minor inconvenience, painting, signage
 
 Return ONLY JSON, no other text:
-{"priority": "🔴 High or 🟡 Medium or 🟢 Low", "reason": "brief reason in English"}`;
+{"priority": "High or Medium or Low", "reason": "brief reason in English"}`;
 
   try {
-    const response = callGemini(prompt);
-    const parsed = parseJsonFromGemini(response);
+    const response = callLLM(prompt);
+    const parsed = parseJsonFromLLM(response);
     if (parsed && parsed.priority) return parsed;
-    return { priority: '🟡 Medium', reason: 'Default priority' };
+    return { priority: 'Medium', reason: 'Default priority' };
   } catch (e) {
     Logger.log('assignPriority error: ' + e.toString());
-    return { priority: '🟡 Medium', reason: 'AI unavailable, default assigned' };
+    return { priority: 'Medium', reason: '⚠️ AI unavailable — needs manual review' };
   }
 }
 
@@ -578,7 +632,7 @@ Format as a formal meeting agenda in Marathi with:
 5. End with "विशेष सूचना" (special notes) section for any other business`;
 
   try {
-    return callGemini(prompt);
+    return callLLM(prompt);
   } catch (e) {
     return 'AI agenda generation failed: ' + e.toString();
   }
@@ -595,18 +649,34 @@ function initializeSheets() {
 }
 
 // ============================================================
-// Utility: Test Gemini connection
+// Utility: Test LLM connections
 // ============================================================
 
-function testGemini() {
+function testLLM() {
+  var results = {};
+
+  // Test Gemini
   try {
-    const result = callGemini('Reply with exactly: "Gemini connected successfully"');
-    Logger.log('Gemini test result: ' + result);
-    return result;
+    var geminiResult = callGeminiProvider('Reply with exactly: "Gemini connected successfully"');
+    results.gemini = 'OK: ' + geminiResult.substring(0, 80);
+    Logger.log('Gemini test: ' + results.gemini);
   } catch (e) {
+    results.gemini = 'FAILED: ' + e.toString();
     Logger.log('Gemini test failed: ' + e.toString());
-    return 'Failed: ' + e.toString();
   }
+
+  // Test Groq
+  try {
+    var groqResult = callGroqProvider('Reply with exactly: "Groq connected successfully"');
+    results.groq = 'OK: ' + groqResult.substring(0, 80);
+    Logger.log('Groq test: ' + results.groq);
+  } catch (e) {
+    results.groq = 'FAILED: ' + e.toString();
+    Logger.log('Groq test failed: ' + e.toString());
+  }
+
+  Logger.log('LLM test results: ' + JSON.stringify(results));
+  return results;
 }
 
 // ============================================================
