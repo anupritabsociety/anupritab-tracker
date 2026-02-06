@@ -14,7 +14,7 @@ const STATUSES = [
   { status: STATUS_RESOLVED, key: 'resolved' },
 ];
 
-export default function KanbanBoard({ issues, isMcAuthenticated, onStatusUpdate }) {
+export default function KanbanBoard({ issues, isMcAuthenticated, onStatusUpdate, updating }) {
   const {
     handleDragStart,
     handleDragEnd,
@@ -24,7 +24,7 @@ export default function KanbanBoard({ issues, isMcAuthenticated, onStatusUpdate 
     handleTouchStart,
   } = useDragDrop({
     onDrop: onStatusUpdate,
-    enabled: isMcAuthenticated,
+    enabled: isMcAuthenticated && !updating,
   });
 
   return (

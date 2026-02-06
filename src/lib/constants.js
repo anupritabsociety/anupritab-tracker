@@ -25,12 +25,17 @@ export const KEY_TO_STATUS = {
 
 export const VALID_CATEGORIES = [CAT_BUILDER, CAT_SOCIETY];
 
-// Flat list for the dropdown
+// Flat list for the dropdown (9 floors × 3 flats = 27 total)
 export const FLAT_LIST = [
-  '101', '102', '201', '202', '301', '302', '401', '402',
-  '501', '502', '601', '602', '701', '702', '801', '802',
-  '901', '902', '1001', '1002', '1101', '1102', '1201', '1202',
-  'Shop 1', 'Shop 2', 'Office',
+  '101', '102', '103',
+  '201', '202', '203',
+  '301', '302', '303',
+  '401', '402', '403',
+  '501', '502', '503',
+  '601', '602', '603',
+  '701', '702', '703',
+  '801', '802', '803',
+  '901', '902', '903',
 ];
 
 // Processing overlay messages (Marathi)
@@ -54,7 +59,6 @@ export const FILTERS = [
 
 // Category selector options for the form
 export const CATEGORY_OPTIONS = [
-  { key: 'auto', label: '\u0938\u094d\u0935\u092f\u0902 \u0936\u094b\u0927', description: 'AI \u0928\u093f\u0930\u094d\u0923\u092f' }, // स्वयं शोध, AI निर्णय
   { key: 'builder', label: CAT_BUILDER, color: 'builder' },
   { key: 'society', label: CAT_SOCIETY, color: 'society' },
 ];

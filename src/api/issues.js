@@ -13,5 +13,10 @@ export async function submitComplaint(formData) {
 }
 
 export async function updateStatus(issueNo, statusKey) {
-  return apiPost({ action: 'updateStatus', issueNo, statusKey });
+  try {
+    return await apiPost({ action: 'updateStatus', issueNo, statusKey });
+  } catch {
+    // Single retry
+    return apiPost({ action: 'updateStatus', issueNo, statusKey });
+  }
 }

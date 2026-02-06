@@ -30,10 +30,14 @@ describe('constants', () => {
 
   it('FLAT_LIST has expected entries', () => {
     expect(FLAT_LIST).toContain('101');
-    expect(FLAT_LIST).toContain('1202');
-    expect(FLAT_LIST).toContain('Shop 1');
-    expect(FLAT_LIST).toContain('Office');
-    expect(FLAT_LIST.length).toBeGreaterThan(20);
+    expect(FLAT_LIST).toContain('903');
+    expect(FLAT_LIST).toHaveLength(27);
+    // 9 floors × 3 flats per floor
+    for (let floor = 1; floor <= 9; floor++) {
+      expect(FLAT_LIST).toContain(`${floor}01`);
+      expect(FLAT_LIST).toContain(`${floor}02`);
+      expect(FLAT_LIST).toContain(`${floor}03`);
+    }
   });
 
   it('FILTERS has expected keys', () => {

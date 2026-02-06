@@ -13,7 +13,7 @@ export default function ComplaintForm({ onSuccess }) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('auto');
+  const [category, setCategory] = useState('society');
   const [photos, setPhotos] = useState([]);
   const [processing, setProcessing] = useState(false);
 
@@ -38,9 +38,9 @@ export default function ComplaintForm({ onSuccess }) {
       })),
     };
 
-    // Add explicit category if not auto-detect
+    // Set explicit category
     if (category === 'builder') formData.category = CAT_BUILDER;
-    else if (category === 'society') formData.category = CAT_SOCIETY;
+    else formData.category = CAT_SOCIETY;
 
     try {
       const text = await submitComplaint(formData);
@@ -69,7 +69,7 @@ export default function ComplaintForm({ onSuccess }) {
     setName('');
     setPhone('');
     setDescription('');
-    setCategory('auto');
+    setCategory('society');
     setPhotos([]);
   };
 
@@ -127,9 +127,6 @@ export default function ComplaintForm({ onSuccess }) {
             {'\u092a\u094d\u0930\u0915\u093e\u0930'}
           </label>
           <CategorySelector value={category} onChange={setCategory} />
-          <div className="text-[0.7rem] text-text-muted mt-1.5 leading-relaxed">
-            {'\u0938\u094d\u0935\u092f\u0902 \u0936\u094b\u0927 \u0928\u093f\u0935\u0921\u0932\u094d\u092f\u093e\u0938 AI \u0938\u094d\u0935\u0924: \u0928\u093f\u0930\u094d\u0923\u092f \u0918\u0947\u0924\u0947'}
-          </div>
         </div>
 
         {/* Description */}

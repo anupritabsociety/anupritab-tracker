@@ -27,6 +27,7 @@ export default function TrackerPage() {
     showToast,
   } = useAppContext();
   const [pinOpen, setPinOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (issues.length === 0 && !loading && !error) {
@@ -46,26 +47,29 @@ export default function TrackerPage() {
 
   const handleStatusUpdate = useCallback(
     async (issueNo, statusKey) => {
+      if (updating) return;
       const newStatus = KEY_TO_STATUS[statusKey];
       if (!newStatus) return;
 
-      // Optimistic update
+      setUpdating(true);
       updateIssueLocally(issueNo, newStatus);
 
       try {
         const result = await updateStatus(issueNo, statusKey);
         if (result.success) {
-          showToast('\u0938\u094d\u0925\u093f\u0924\u0940 \u0905\u0926\u094d\u092f\u092f\u093e\u0935\u0924 \u0915\u0947\u0932\u0940', 'success'); // स्थिती अद्ययावत केली
+          showToast('\u0938\u094d\u0925\u093f\u0924\u0940 \u0905\u0926\u094d\u092f\u092f\u093e\u0935\u0924 \u0915\u0947\u0932\u0940', 'success');
         } else {
           revertIssues();
-          showToast('\u0938\u094d\u0925\u093f\u0924\u0940 \u092c\u0926\u0932\u0924\u093e \u0906\u0932\u0940 \u0928\u093e\u0939\u0940', 'error'); // स्थिती बदलता आली नाही
+          showToast('\u0938\u094d\u0925\u093f\u0924\u0940 \u092c\u0926\u0932\u0924\u093e \u0906\u0932\u0940 \u0928\u093e\u0939\u0940', 'error');
         }
       } catch {
         revertIssues();
-        showToast('\u0928\u0947\u091f\u0935\u0930\u094d\u0915 \u0924\u094d\u0930\u0941\u091f\u0940', 'error'); // नेटवर्क त्रुटी
+        showToast('\u0928\u0947\u091f\u0935\u0930\u094d\u0915 \u0924\u094d\u0930\u0941\u091f\u0940 \u2014 \u092a\u0941\u0928\u094d\u0939\u093e \u092a\u094d\u0930\u092f\u0924\u094d\u0928 \u0915\u0930\u093e', 'error');
+      } finally {
+        setUpdating(false);
       }
     },
-    [updateIssueLocally, revertIssues, showToast],
+    [updating, updateIssueLocally, revertIssues, showToast],
   );
 
   return (
@@ -118,6 +122,7 @@ export default function TrackerPage() {
                 issues={filtered}
                 isMcAuthenticated={isMcAuthenticated}
                 onStatusUpdate={handleStatusUpdate}
+                updating={updating}
               />
             )}
           </>
