@@ -10,10 +10,10 @@ function escapeHtml(text) {
 export default function TableView({ issues }) {
   return (
     <div className="rounded-xl overflow-hidden border border-border">
-      <table className="w-full border-collapse text-[0.8rem]">
+      <table className="w-full table-fixed border-collapse text-[0.8rem]">
         <thead>
           <tr>
-            <th className="bg-bg-tertiary/90 backdrop-blur-sm py-2.5 px-3 text-left font-semibold text-[0.72rem] text-text-secondary border-b border-border sticky top-0 z-[1] whitespace-nowrap">
+            <th className="bg-bg-tertiary/90 backdrop-blur-sm py-2.5 px-3 text-left font-semibold text-[0.72rem] text-text-secondary border-b border-border sticky top-0 z-[1] whitespace-nowrap w-10">
               #
             </th>
             <th className="bg-bg-tertiary/90 backdrop-blur-sm py-2.5 px-3 text-left font-semibold text-[0.72rem] text-text-secondary border-b border-border sticky top-0 z-[1] whitespace-nowrap">
@@ -42,8 +42,8 @@ export default function TableView({ issues }) {
               <td className="py-3 px-3 border-b border-border-light align-middle w-9 font-semibold text-text-muted text-[0.72rem]">
                 {issue.issueNo}
               </td>
-              <td className="py-3 px-3 border-b border-border-light align-middle font-medium text-text-primary leading-snug">
-                <span dangerouslySetInnerHTML={{ __html: escapeHtml(issue.issue) }} />
+              <td className="py-3 px-3 border-b border-border-light align-middle font-medium text-text-primary leading-snug overflow-hidden">
+                <span className="line-clamp-2" dangerouslySetInnerHTML={{ __html: escapeHtml(issue.issue) }} />
               </td>
               <td className="py-3 px-3 border-b border-border-light align-middle w-[70px] max-[420px]:hidden">
                 <CategoryBadge category={issue.category} />
