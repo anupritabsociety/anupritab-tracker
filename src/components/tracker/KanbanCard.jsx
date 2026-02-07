@@ -1,3 +1,5 @@
+import { memo, useRef, useCallback } from 'react';
+
 function escapeHtml(text) {
   if (text === null || text === undefined) return '';
   const div = document.createElement('div');
@@ -5,19 +7,44 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-export default function KanbanCard({ issue, draggable, onDragStart, onDragEnd, onTouchStart }) {
+const KanbanCard = memo(function KanbanCard({ issue, draggable, onDragStart, onDragEnd, onTouchStart, onClick }) {
+  const hasDraggedRef = useRef(false);
+
   const rb = issue.reportedBy ? String(issue.reportedBy) : '';
   const flats = rb ? rb.split(',').map((f) => f.trim()) : [];
+
+  const handleDragStart = useCallback((e) => {
+    hasDraggedRef.current = true;
+    onDragStart?.(e);
+  }, [onDragStart]);
+
+  const handleDragEnd = useCallback((e) => {
+    onDragEnd?.(e);
+  }, [onDragEnd]);
+
+  const handleClick = useCallback(() => {
+    if (hasDraggedRef.current) {
+      hasDraggedRef.current = false;
+      return;
+    }
+    onClick?.(issue);
+  }, [onClick, issue]);
+
+  const handleTouchStart = useCallback((e) => {
+    hasDraggedRef.current = false;
+    onTouchStart?.(e);
+  }, [onTouchStart]);
 
   return (
     <div
       className={`bg-bg-primary border border-border rounded-lg py-2 px-2.5 mb-1.5 text-[0.72rem] shadow-sm hover:shadow-md transition-shadow duration-150 ${
-        draggable ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
+        draggable ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'
       }`}
       draggable={draggable}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onTouchStart={onTouchStart}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onTouchStart={handleTouchStart}
+      onClick={handleClick}
       data-issue-no={issue.issueNo}
       data-category={issue.category}
     >
@@ -67,4 +94,16 @@ export default function KanbanCard({ issue, draggable, onDragStart, onDragEnd, o
       )}
     </div>
   );
-}
+}, (prev, next) => {
+  return (
+    prev.issue.issueNo === next.issue.issueNo &&
+    prev.issue.issue === next.issue.issue &&
+    prev.issue.category === next.issue.category &&
+    prev.issue.status === next.issue.status &&
+    prev.issue.count === next.issue.count &&
+    prev.issue.reportedBy === next.issue.reportedBy &&
+    prev.draggable === next.draggable
+  );
+});
+
+export default KanbanCard;

@@ -8,6 +8,7 @@ export function useDragDrop({ onDrop, enabled }) {
   const draggedRef = useRef(null);
   const cloneRef = useRef(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
+  const lastTouchMoveRef = useRef(0);
 
   // Desktop drag handlers
   const handleDragStart = useCallback(
@@ -67,6 +68,9 @@ export function useDragDrop({ onDrop, enabled }) {
   const handleTouchMove = useCallback(
     (e) => {
       if (!draggedRef.current) return;
+      const now = Date.now();
+      if (now - lastTouchMoveRef.current < 16) return;
+      lastTouchMoveRef.current = now;
       const touch = e.touches[0];
       const dx = Math.abs(touch.clientX - touchStartRef.current.x);
       const dy = Math.abs(touch.clientY - touchStartRef.current.y);

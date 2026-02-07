@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useAppContext } from '../../App';
 import { updateStatus } from '../../api/issues';
 import { KEY_TO_STATUS, STATUS_TO_KEY } from '../../lib/constants';
@@ -9,6 +9,7 @@ import TabSwitcher from './TabSwitcher';
 import TableView from './TableView';
 import KanbanBoard from './KanbanBoard';
 import EmptyState from './EmptyState';
+import IssueDetailModal from './IssueDetailModal';
 import PinModal from '../shared/PinModal';
 import Footer from '../layout/Footer';
 
@@ -28,6 +29,7 @@ export default function TrackerPage() {
   } = useAppContext();
   const [pinOpen, setPinOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
   useEffect(() => {
     if (issues.length === 0 && !loading && !error) {
@@ -35,7 +37,7 @@ export default function TrackerPage() {
     }
   }, []);
 
-  const filtered = filterIssues(issues, currentFilter);
+  const filtered = useMemo(() => filterIssues(issues, currentFilter), [issues, currentFilter]);
 
   const handleMcLogin = () => {
     if (isMcAuthenticated) {
@@ -71,6 +73,12 @@ export default function TrackerPage() {
     },
     [updating, updateIssueLocally, revertIssues, showToast],
   );
+
+  const handleIssueClick = useCallback((issue) => {
+    setSelectedIssue(issue);
+  }, []);
+
+  const hasData = !loading && !error && filtered.length > 0;
 
   return (
     <div className="max-w-[640px] mx-auto px-3.5 py-3 pb-[calc(56px+16px+env(safe-area-inset-bottom,0px))]">
@@ -114,23 +122,27 @@ export default function TrackerPage() {
         {error && <EmptyState type="error" message={error} onRetry={loadIssues} />}
         {!loading && !error && filtered.length === 0 && <EmptyState type="empty" />}
 
-        {!loading && !error && filtered.length > 0 && (
+        {hasData && (
           <>
-            {currentTab === 'table' && <TableView issues={filtered} />}
-            {currentTab === 'kanban' && (
+            <div style={{ display: currentTab === 'table' ? '' : 'none' }}>
+              <TableView issues={filtered} onIssueClick={handleIssueClick} />
+            </div>
+            <div style={{ display: currentTab === 'kanban' ? '' : 'none' }}>
               <KanbanBoard
                 issues={filtered}
                 isMcAuthenticated={isMcAuthenticated}
                 onStatusUpdate={handleStatusUpdate}
                 updating={updating}
+                onIssueClick={handleIssueClick}
               />
-            )}
+            </div>
           </>
         )}
       </div>
 
       <Footer />
       <PinModal open={pinOpen} onClose={() => setPinOpen(false)} />
+      <IssueDetailModal issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
     </div>
   );
 }

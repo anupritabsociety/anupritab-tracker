@@ -69,6 +69,7 @@ describe('TrackerPage', () => {
 
   it('shows issue data in table', () => {
     render(<TrackerPage />);
-    expect(screen.getByText('Test issue')).toBeInTheDocument();
+    const matches = screen.getAllByText('Test issue');
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 });

@@ -14,7 +14,7 @@ const STATUSES = [
   { status: STATUS_RESOLVED, key: 'resolved' },
 ];
 
-export default function KanbanBoard({ issues, isMcAuthenticated, onStatusUpdate, updating }) {
+export default function KanbanBoard({ issues, isMcAuthenticated, onStatusUpdate, updating, onIssueClick }) {
   const {
     handleDragStart,
     handleDragEnd,
@@ -63,6 +63,7 @@ export default function KanbanBoard({ issues, isMcAuthenticated, onStatusUpdate,
                         onDragStart={(e) => handleDragStart(e, issue.issueNo, cat.key)}
                         onDragEnd={handleDragEnd}
                         onTouchStart={(e) => handleTouchStart(e, issue.issueNo, cat.key)}
+                        onClick={onIssueClick}
                       />
                     ))}
                   </KanbanColumn>

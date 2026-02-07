@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { CategoryBadge, StatusBadge, PriorityBadge } from '../shared/Badge';
 
 function escapeHtml(text) {
@@ -7,7 +8,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-export default function TableView({ issues }) {
+const TableView = memo(function TableView({ issues, onIssueClick }) {
   return (
     <div className="rounded-xl overflow-hidden border border-border">
       <table className="w-full table-fixed border-collapse text-[0.8rem]">
@@ -37,7 +38,8 @@ export default function TableView({ issues }) {
           {issues.map((issue) => (
             <tr
               key={issue.issueNo}
-              className="transition-colors duration-100 even:bg-bg-secondary hover:bg-accent-light"
+              className="transition-colors duration-100 even:bg-bg-secondary hover:bg-accent-light cursor-pointer"
+              onClick={() => onIssueClick?.(issue)}
             >
               <td className="py-3 px-3 border-b border-border-light align-middle w-9 font-semibold text-text-muted text-[0.72rem]">
                 {issue.issueNo}
@@ -65,4 +67,6 @@ export default function TableView({ issues }) {
       </table>
     </div>
   );
-}
+});
+
+export default TableView;

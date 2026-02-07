@@ -1,4 +1,6 @@
-export default function KanbanColumn({
+import { memo } from 'react';
+
+const KanbanColumn = memo(function KanbanColumn({
   status,
   statusKey,
   category,
@@ -27,4 +29,6 @@ export default function KanbanColumn({
       {children}
     </div>
   );
-}
+});
+
+export default KanbanColumn;

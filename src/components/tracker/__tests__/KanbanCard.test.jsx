@@ -40,9 +40,9 @@ describe('KanbanCard', () => {
     expect(container.firstChild.className).toContain('cursor-grab');
   });
 
-  it('has cursor-default when not draggable', () => {
+  it('has cursor-pointer when not draggable', () => {
     const { container } = render(<KanbanCard issue={mockIssue} draggable={false} />);
-    expect(container.firstChild.className).toContain('cursor-default');
+    expect(container.firstChild.className).toContain('cursor-pointer');
   });
 
   it('shows grip dots when draggable', () => {

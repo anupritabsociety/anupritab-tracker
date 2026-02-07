@@ -102,6 +102,10 @@ body::before {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-16px); }
 }
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -125,6 +129,7 @@ body::before {
 .animate-shake { animation: shake 0.3s ease-out; }
 .animate-toast-in { animation: toast-in 0.3s ease-out both; }
 .animate-toast-out { animation: toast-out 0.3s ease-out both; }
+.animate-slide-up { animation: slide-up 0.3s ease-out both; }
 .btn-press { @apply active:scale-[0.97]; }
 
 /* Scrollbar */
