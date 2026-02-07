@@ -35,11 +35,10 @@ describe('API: issues', () => {
   it('updateStatus calls apiPost with correct params', async () => {
     apiPost.mockResolvedValue({ success: true });
     await updateStatus(42, 'progress');
-    expect(apiPost).toHaveBeenCalledWith({
-      action: 'updateStatus',
-      issueNo: 42,
-      statusKey: 'progress',
-    });
+    expect(apiPost).toHaveBeenCalledWith(
+      { action: 'updateStatus', issueNo: 42, statusKey: 'progress' },
+      { timeout: 10000 },
+    );
   });
 
   it('getIssues returns response data', async () => {

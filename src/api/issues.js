@@ -13,10 +13,11 @@ export async function submitComplaint(formData) {
 }
 
 export async function updateStatus(issueNo, statusKey) {
+  const opts = { timeout: 10000 };
   try {
-    return await apiPost({ action: 'updateStatus', issueNo, statusKey });
+    return await apiPost({ action: 'updateStatus', issueNo, statusKey }, opts);
   } catch {
     // Single retry
-    return apiPost({ action: 'updateStatus', issueNo, statusKey });
+    return apiPost({ action: 'updateStatus', issueNo, statusKey }, opts);
   }
 }

@@ -8,9 +8,9 @@ export async function apiGet(params) {
   return JSON.parse(text);
 }
 
-export async function apiPost(body) {
+export async function apiPost(body, { timeout = 60000 } = {}) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
   try {
     const res = await fetch(SCRIPT_URL, {
       method: 'POST',
